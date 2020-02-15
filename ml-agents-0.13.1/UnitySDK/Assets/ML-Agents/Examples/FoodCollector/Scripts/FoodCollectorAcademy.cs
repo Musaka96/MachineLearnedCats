@@ -13,17 +13,17 @@ public class FoodCollectorAcademy : Academy
     public Text scoreText;
     public override void AcademyReset()
     {
-        ClearObjects(GameObject.FindGameObjectsWithTag("food"));
-        ClearObjects(GameObject.FindGameObjectsWithTag("badFood"));
+        this.ClearObjects(GameObject.FindGameObjectsWithTag("food"));
+        this.ClearObjects(GameObject.FindGameObjectsWithTag("badFood"));
 
-        agents = GameObject.FindGameObjectsWithTag("agent");
-        listArea = FindObjectsOfType<FoodCollectorArea>();
-        foreach (var fa in listArea)
+        this.agents = GameObject.FindGameObjectsWithTag("agent");
+        this.listArea = FindObjectsOfType<FoodCollectorArea>();
+        foreach (var fa in this.listArea)
         {
-            fa.ResetFoodArea(agents);
+            fa.ResetFoodArea(this.agents);
         }
 
-        totalScore = 0;
+        this.totalScore = 0;
     }
 
     void ClearObjects(GameObject[] objects)
@@ -36,6 +36,6 @@ public class FoodCollectorAcademy : Academy
 
     public override void AcademyStep()
     {
-        scoreText.text = string.Format(@"Score: {0}", totalScore);
+        this.scoreText.text = string.Format(@"Score: {0}", this.totalScore);
     }
 }

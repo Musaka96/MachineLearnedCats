@@ -20,7 +20,7 @@ namespace MLAgents
         {
             if (col.transform.CompareTag(k_Target))
             {
-                touchingTarget = true;
+                this.touchingTarget = true;
             }
         }
 
@@ -31,7 +31,7 @@ namespace MLAgents
         {
             if (other.transform.CompareTag(k_Target))
             {
-                touchingTarget = false;
+                this.touchingTarget = false;
             }
         }
     }

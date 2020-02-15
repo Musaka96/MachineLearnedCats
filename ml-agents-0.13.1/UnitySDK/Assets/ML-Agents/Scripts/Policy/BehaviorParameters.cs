@@ -44,37 +44,37 @@ namespace MLAgents
 
         public BrainParameters brainParameters
         {
-            get { return m_BrainParameters; }
+            get { return this.m_BrainParameters; }
         }
 
         public bool useChildSensors
         {
-            get { return m_useChildSensors; }
+            get { return this.m_useChildSensors; }
         }
 
         public string behaviorName
         {
             
-            get { return m_BehaviorName + "?team=" + m_TeamID;} 
+            get { return this.m_BehaviorName + "?team=" + this.m_TeamID;} 
 
         }
 
         public IPolicy GeneratePolicy(Func<float[]> heuristic)
         {
-            switch (m_BehaviorType)
+            switch (this.m_BehaviorType)
             {
                 case BehaviorType.HeuristicOnly:
                     return new HeuristicPolicy(heuristic);
                 case BehaviorType.InferenceOnly:
-                    return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
+                    return new BarracudaPolicy(this.m_BrainParameters, this.m_Model, this.m_InferenceDevice);
                 case BehaviorType.Default:
                     if (FindObjectOfType<Academy>().IsCommunicatorOn)
                     {
-                        return new RemotePolicy(m_BrainParameters, behaviorName);
+                        return new RemotePolicy(this.m_BrainParameters, this.behaviorName);
                     }
-                    if (m_Model != null)
+                    if (this.m_Model != null)
                     {
-                        return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
+                        return new BarracudaPolicy(this.m_BrainParameters, this.m_Model, this.m_InferenceDevice);
                     }
                     else
                     {
@@ -90,9 +90,9 @@ namespace MLAgents
             NNModel model,
             InferenceDevice inferenceDevice = InferenceDevice.CPU)
         {
-            m_Model = model;
-            m_InferenceDevice = inferenceDevice;
-            m_BehaviorName = behaviorName;
+            this.m_Model = model;
+            this.m_InferenceDevice = inferenceDevice;
+            this.m_BehaviorName = behaviorName;
         }
     }
 }

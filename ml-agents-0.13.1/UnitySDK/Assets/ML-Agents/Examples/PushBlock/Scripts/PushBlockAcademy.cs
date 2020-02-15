@@ -45,6 +45,6 @@ public class PushBlockAcademy : Academy
 
     void State()
     {
-        Physics.gravity *= gravityMultiplier;
+        Physics.gravity *= this.gravityMultiplier;
     }
 }

@@ -21,10 +21,10 @@ namespace MLAgents.Sensor
         /// <param name="offset"></param>
         public void SetTarget(IList<float> data, int offset)
         {
-            m_Data = data;
-            m_Offset = offset;
-            m_Proxy = null;
-            m_Batch = -1;
+            this.m_Data = data;
+            this.m_Offset = offset;
+            this.m_Proxy = null;
+            this.m_Batch = -1;
         }
 
         /// <summary>
@@ -35,10 +35,10 @@ namespace MLAgents.Sensor
         /// <param name="channelOffset"></param>
         public void SetTarget(TensorProxy tensorProxy, int batchIndex, int channelOffset)
         {
-            m_Proxy = tensorProxy;
-            m_Batch = batchIndex;
-            m_Offset = channelOffset;
-            m_Data = null;
+            this.m_Proxy = tensorProxy;
+            this.m_Batch = batchIndex;
+            this.m_Offset = channelOffset;
+            this.m_Data = null;
         }
 
         /// <summary>
@@ -49,13 +49,13 @@ namespace MLAgents.Sensor
         {
             set
             {
-                if (m_Data != null)
+                if (this.m_Data != null)
                 {
-                    m_Data[index + m_Offset] = value;
+                    this.m_Data[index + this.m_Offset] = value;
                 }
                 else
                 {
-                    m_Proxy.data[m_Batch, index + m_Offset] = value;
+                    this.m_Proxy.data[this.m_Batch, index + this.m_Offset] = value;
                 }
             }
         }
@@ -71,7 +71,7 @@ namespace MLAgents.Sensor
             set
             {
                 // Only TensorProxy supports 3D access
-                m_Proxy.data[m_Batch, h, w, ch + m_Offset] = value;
+                this.m_Proxy.data[this.m_Batch, h, w, ch + this.m_Offset] = value;
             }
         }
 
@@ -82,12 +82,12 @@ namespace MLAgents.Sensor
         /// <param name="writeOffset">Optional write offset</param>
         public void AddRange(IEnumerable<float> data, int writeOffset = 0)
         {
-            if (m_Data != null)
+            if (this.m_Data != null)
             {
                 int index = 0;
                 foreach (var val in data)
                 {
-                    m_Data[index + m_Offset + writeOffset] = val;
+                    this.m_Data[index + this.m_Offset + writeOffset] = val;
                     index++;
                 }
             }
@@ -96,7 +96,7 @@ namespace MLAgents.Sensor
                 int index = 0;
                 foreach (var val in data)
                 {
-                    m_Proxy.data[m_Batch, index + m_Offset + writeOffset] = val;
+                    this.m_Proxy.data[this.m_Batch, index + this.m_Offset + writeOffset] = val;
                     index++;
                 }
             }

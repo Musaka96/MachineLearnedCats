@@ -69,7 +69,7 @@ namespace MLAgents
         /// </returns>
         public bool IsCommunicatorOn
         {
-            get { return Communicator != null; }
+            get { return this.Communicator != null; }
         }
 
         /// The number of episodes completed by the environment. Incremented
@@ -137,15 +137,15 @@ namespace MLAgents
         /// </summary>
         void Awake()
         {
-            LazyInitialization();
+            this.LazyInitialization();
         }
 
         public void LazyInitialization()
         {
-            if (!m_Initialized)
+            if (!this.m_Initialized)
             {
-                InitializeEnvironment();
-                m_Initialized = true;
+                this.InitializeEnvironment();
+                this.m_Initialized = true;
             }
         }
 
@@ -185,20 +185,20 @@ namespace MLAgents
         /// </summary>
         void InitializeEnvironment()
         {
-            m_OriginalGravity = Physics.gravity;
-            m_OriginalFixedDeltaTime = Time.fixedDeltaTime;
-            m_OriginalMaximumDeltaTime = Time.maximumDeltaTime;
+            this.m_OriginalGravity = Physics.gravity;
+            this.m_OriginalFixedDeltaTime = Time.fixedDeltaTime;
+            this.m_OriginalMaximumDeltaTime = Time.maximumDeltaTime;
 
             var floatProperties = new FloatPropertiesChannel();
-            FloatProperties = floatProperties;
-            InitializeAcademy();
+            this.FloatProperties = floatProperties;
+            this.InitializeAcademy();
 
 
             // Try to launch the communicator by using the arguments passed at launch
             var port = ReadPortFromArgs();
             if (port > 0)
             {
-                Communicator = new RpcCommunicator(
+                this.Communicator = new RpcCommunicator(
                     new CommunicatorInitParameters
                     {
                         port = port
@@ -206,20 +206,20 @@ namespace MLAgents
                 );
             }
 
-            if (Communicator != null)
+            if (this.Communicator != null)
             {
-                Communicator.RegisterSideChannel(new EngineConfigurationChannel());
-                Communicator.RegisterSideChannel(floatProperties);
+                this.Communicator.RegisterSideChannel(new EngineConfigurationChannel());
+                this.Communicator.RegisterSideChannel(floatProperties);
                 // We try to exchange the first message with Python. If this fails, it means
                 // no Python Process is ready to train the environment. In this case, the
                 //environment must use Inference.
                 try
                 {
-                    var unityRLInitParameters = Communicator.Initialize(
+                    var unityRLInitParameters = this.Communicator.Initialize(
                         new CommunicatorInitParameters
                         {
                             version = k_ApiVersion,
-                            name = gameObject.name,
+                            name = this.gameObject.name,
                         });
                     Random.InitState(unityRLInitParameters.seed);
                 }
@@ -229,13 +229,13 @@ namespace MLAgents
                         $"Couldn't connect to trainer on port {port} using API version {k_ApiVersion}. " +
                         "Will perform inference instead."
                     );
-                    Communicator = null;
+                    this.Communicator = null;
                 }
 
-                if (Communicator != null)
+                if (this.Communicator != null)
                 {
-                    Communicator.QuitCommandReceived += OnQuitCommandReceived;
-                    Communicator.ResetCommandReceived += OnResetCommand;
+                    this.Communicator.QuitCommandReceived += OnQuitCommandReceived;
+                    this.Communicator.ResetCommandReceived += this.OnResetCommand;
                 }
             }
 
@@ -263,7 +263,7 @@ namespace MLAgents
 
         void OnResetCommand()
         {
-            ForcedFullReset();
+            this.ForcedFullReset();
         }
 
         /// <summary>
@@ -299,7 +299,7 @@ namespace MLAgents
         /// </returns>
         public int GetEpisodeCount()
         {
-            return m_EpisodeCount;
+            return this.m_EpisodeCount;
         }
 
         /// <summary>
@@ -310,7 +310,7 @@ namespace MLAgents
         /// </returns>
         public int GetStepCount()
         {
-            return m_StepCount;
+            return this.m_StepCount;
         }
 
         /// <summary>
@@ -321,7 +321,7 @@ namespace MLAgents
         /// </returns>
         public int GetTotalStepCount()
         {
-            return m_TotalStepCount;
+            return this.m_TotalStepCount;
         }
 
         /// <summary>
@@ -331,9 +331,9 @@ namespace MLAgents
         /// </summary>
         void ForcedFullReset()
         {
-            EnvironmentReset();
+            this.EnvironmentReset();
             AgentForceReset?.Invoke();
-            m_FirstAcademyReset = true;
+            this.m_FirstAcademyReset = true;
         }
 
         /// <summary>
@@ -342,12 +342,12 @@ namespace MLAgents
         /// </summary>
         void EnvironmentStep()
         {
-            if (!m_FirstAcademyReset)
+            if (!this.m_FirstAcademyReset)
             {
-                ForcedFullReset();
+                this.ForcedFullReset();
             }
 
-            AgentSetStatus?.Invoke(m_StepCount);
+            AgentSetStatus?.Invoke(this.m_StepCount);
 
             using (TimerStack.Instance.Scoped("AgentResetIfDone"))
             {
@@ -366,7 +366,7 @@ namespace MLAgents
 
             using (TimerStack.Instance.Scoped("AcademyStep"))
             {
-                AcademyStep();
+                this.AcademyStep();
             }
 
             using (TimerStack.Instance.Scoped("AgentAct"))
@@ -374,8 +374,8 @@ namespace MLAgents
                 AgentAct?.Invoke();
             }
 
-            m_StepCount += 1;
-            m_TotalStepCount += 1;
+            this.m_StepCount += 1;
+            this.m_TotalStepCount += 1;
         }
 
         /// <summary>
@@ -383,9 +383,9 @@ namespace MLAgents
         /// </summary>
         void EnvironmentReset()
         {
-            m_StepCount = 0;
-            m_EpisodeCount++;
-            AcademyReset();
+            this.m_StepCount = 0;
+            this.m_EpisodeCount++;
+            this.AcademyReset();
         }
 
         /// <summary>
@@ -393,7 +393,7 @@ namespace MLAgents
         /// </summary>
         void FixedUpdate()
         {
-            EnvironmentStep();
+            this.EnvironmentStep();
         }
 
         /// <summary>
@@ -409,12 +409,12 @@ namespace MLAgents
         public ModelRunner GetOrCreateModelRunner(
             NNModel model, BrainParameters brainParameters, InferenceDevice inferenceDevice)
         {
-            var modelRunner = m_ModelRunners.Find(x => x.HasModel(model, inferenceDevice));
+            var modelRunner = this.m_ModelRunners.Find(x => x.HasModel(model, inferenceDevice));
             if (modelRunner == null)
             {
                 modelRunner = new ModelRunner(
                     model, brainParameters, inferenceDevice);
-                m_ModelRunners.Add(modelRunner);
+                this.m_ModelRunners.Add(modelRunner);
             }
             return modelRunner;
         }
@@ -424,14 +424,14 @@ namespace MLAgents
         /// </summary>
         protected virtual void OnDestroy()
         {
-            Physics.gravity = m_OriginalGravity;
-            Time.fixedDeltaTime = m_OriginalFixedDeltaTime;
-            Time.maximumDeltaTime = m_OriginalMaximumDeltaTime;
+            Physics.gravity = this.m_OriginalGravity;
+            Time.fixedDeltaTime = this.m_OriginalFixedDeltaTime;
+            Time.maximumDeltaTime = this.m_OriginalMaximumDeltaTime;
 
             // Signal to listeners that the academy is being destroyed now
             DestroyAction?.Invoke();
 
-            foreach (var mr in m_ModelRunners)
+            foreach (var mr in this.m_ModelRunners)
             {
                 mr.Dispose();
             }

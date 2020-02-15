@@ -51,17 +51,17 @@ namespace MLAgents.InferenceBrain
             Dictionary<int, List<float>> memories,
             object barracudaModel = null)
         {
-            m_Dict[TensorNames.ValueEstimateOutput] = new ValueEstimateApplier();
+            this.m_Dict[TensorNames.ValueEstimateOutput] = new ValueEstimateApplier();
             if (bp.vectorActionSpaceType == SpaceType.Continuous)
             {
-                m_Dict[TensorNames.ActionOutput] = new ContinuousActionOutputApplier();
+                this.m_Dict[TensorNames.ActionOutput] = new ContinuousActionOutputApplier();
             }
             else
             {
-                m_Dict[TensorNames.ActionOutput] =
+                this.m_Dict[TensorNames.ActionOutput] =
                     new DiscreteActionOutputApplier(bp.vectorActionSize, seed, allocator);
             }
-            m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
+            this.m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
 
             if (barracudaModel != null)
             {
@@ -69,7 +69,7 @@ namespace MLAgents.InferenceBrain
 
                 for (var i = 0; i < model?.memories.Count; i++)
                 {
-                    m_Dict[model.memories[i].output] =
+                    this.m_Dict[model.memories[i].output] =
                         new BarracudaMemoryOutputApplier(model.memories.Count, i, memories);
                 }
             }
@@ -87,12 +87,12 @@ namespace MLAgents.InferenceBrain
         {
             foreach (var tensor in tensors)
             {
-                if (!m_Dict.ContainsKey(tensor.name))
+                if (!this.m_Dict.ContainsKey(tensor.name))
                 {
                     throw new UnityAgentsException(
                         $"Unknown tensorProxy expected as output : {tensor.name}");
                 }
-                m_Dict[tensor.name].Apply(tensor, agents);
+                this.m_Dict[tensor.name].Apply(tensor, agents);
             }
         }
     }

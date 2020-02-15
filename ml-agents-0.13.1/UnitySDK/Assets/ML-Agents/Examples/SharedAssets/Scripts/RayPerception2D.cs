@@ -37,19 +37,19 @@ namespace MLAgents
             float startOffset=0.0f, float endOffset=0.0f)
         {
             var perceptionSize = (detectableObjects.Length + 2) * rayAngles.Length;
-            if (m_PerceptionBuffer == null || m_PerceptionBuffer.Length != perceptionSize)
+            if (this.m_PerceptionBuffer == null || this.m_PerceptionBuffer.Length != perceptionSize)
             {
-                m_PerceptionBuffer = new float[perceptionSize];
+                this.m_PerceptionBuffer = new float[perceptionSize];
             }
 
             const float castRadius = 0.5f;
             const bool legacyHitFractionBehavior = true;
             RayPerceptionSensor.PerceiveStatic(
                 rayDistance, rayAngles, detectableObjects, startOffset, endOffset, castRadius,
-                transform, RayPerceptionSensor.CastType.Cast3D, m_PerceptionBuffer, legacyHitFractionBehavior
+                this.transform, RayPerceptionSensor.CastType.Cast3D, this.m_PerceptionBuffer, legacyHitFractionBehavior
             );
 
-            return m_PerceptionBuffer;
+            return this.m_PerceptionBuffer;
         }
 
     }

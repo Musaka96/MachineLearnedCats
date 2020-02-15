@@ -47,11 +47,11 @@ namespace MLAgents.InferenceBrain
             object barracudaModel = null)
         {
             // Generator for Inputs
-            m_Dict[TensorNames.BatchSizePlaceholder] =
+            this.m_Dict[TensorNames.BatchSizePlaceholder] =
                 new BatchSizeGenerator(allocator);
-            m_Dict[TensorNames.SequenceLengthPlaceholder] =
+            this.m_Dict[TensorNames.SequenceLengthPlaceholder] =
                 new SequenceLengthGenerator(allocator);
-            m_Dict[TensorNames.RecurrentInPlaceholder] =
+            this.m_Dict[TensorNames.RecurrentInPlaceholder] =
                 new RecurrentInputGenerator(allocator, memories);
 
             if (barracudaModel != null)
@@ -59,23 +59,23 @@ namespace MLAgents.InferenceBrain
                 var model = (Model)barracudaModel;
                 for (var i = 0; i < model.memories.Count; i++)
                 {
-                    m_Dict[model.memories[i].input] =
+                    this.m_Dict[model.memories[i].input] =
                         new BarracudaRecurrentInputGenerator(i, allocator, memories);
                 }
             }
 
-            m_Dict[TensorNames.PreviousActionPlaceholder] =
+            this.m_Dict[TensorNames.PreviousActionPlaceholder] =
                 new PreviousActionInputGenerator(allocator);
-            m_Dict[TensorNames.ActionMaskPlaceholder] =
+            this.m_Dict[TensorNames.ActionMaskPlaceholder] =
                 new ActionMaskInputGenerator(allocator);
-            m_Dict[TensorNames.RandomNormalEpsilonPlaceholder] =
+            this.m_Dict[TensorNames.RandomNormalEpsilonPlaceholder] =
                 new RandomNormalInputGenerator(seed, allocator);
 
 
             // Generators for Outputs
-            m_Dict[TensorNames.ActionOutput] = new BiDimensionalOutputGenerator(allocator);
-            m_Dict[TensorNames.RecurrentOutput] = new BiDimensionalOutputGenerator(allocator);
-            m_Dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator(allocator);
+            this.m_Dict[TensorNames.ActionOutput] = new BiDimensionalOutputGenerator(allocator);
+            this.m_Dict[TensorNames.RecurrentOutput] = new BiDimensionalOutputGenerator(allocator);
+            this.m_Dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator(allocator);
         }
 
         public void InitializeObservations(Agent agent, ITensorAllocator allocator)
@@ -102,7 +102,7 @@ namespace MLAgents.InferenceBrain
                 }
                 else
                 {
-                    m_Dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] =
+                    this.m_Dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] =
                         new VisualObservationInputGenerator(sensorIndex, allocator);
                     visIndex++;
                 }
@@ -110,7 +110,7 @@ namespace MLAgents.InferenceBrain
 
             if (vecObsGen != null)
             {
-                m_Dict[TensorNames.VectorObservationPlacholder] = vecObsGen;
+                this.m_Dict[TensorNames.VectorObservationPlacholder] = vecObsGen;
             }
         }
 
@@ -130,12 +130,12 @@ namespace MLAgents.InferenceBrain
         {
             foreach (var tensor in tensors)
             {
-                if (!m_Dict.ContainsKey(tensor.name))
+                if (!this.m_Dict.ContainsKey(tensor.name))
                 {
                     throw new UnityAgentsException(
                         $"Unknown tensorProxy expected as input : {tensor.name}");
                 }
-                m_Dict[tensor.name].Generate(tensor, currentBatchSize, agents);
+                this.m_Dict[tensor.name].Generate(tensor, currentBatchSize, agents);
             }
         }
     }

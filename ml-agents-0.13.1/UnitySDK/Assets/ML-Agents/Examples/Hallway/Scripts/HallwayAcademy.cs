@@ -11,7 +11,7 @@ public class HallwayAcademy : Academy
 
     public override void InitializeAcademy()
     {
-        Physics.gravity *= gravityMultiplier;
+        Physics.gravity *= this.gravityMultiplier;
     }
 
     public override void AcademyReset()

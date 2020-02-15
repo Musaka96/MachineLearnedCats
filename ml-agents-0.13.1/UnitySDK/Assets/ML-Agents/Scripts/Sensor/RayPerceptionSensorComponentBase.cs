@@ -58,19 +58,19 @@ namespace MLAgents.Sensor
 
         public override ISensor CreateSensor()
         {
-            var rayAngles = GetRayAngles(raysPerDirection, maxRayDegrees);
-            m_RaySensor = new RayPerceptionSensor(sensorName, rayLength, detectableTags, rayAngles,
-                transform, GetStartVerticalOffset(), GetEndVerticalOffset(), sphereCastRadius, GetCastType(),
-                rayLayerMask
+            var rayAngles = GetRayAngles(this.raysPerDirection, this.maxRayDegrees);
+            this.m_RaySensor = new RayPerceptionSensor(this.sensorName, this.rayLength, this.detectableTags, rayAngles,
+                this.transform, this.GetStartVerticalOffset(), this.GetEndVerticalOffset(), this.sphereCastRadius, this.GetCastType(),
+                this.rayLayerMask
             );
 
-            if (observationStacks != 1)
+            if (this.observationStacks != 1)
             {
-                var stackingSensor = new StackingSensor(m_RaySensor, observationStacks);
+                var stackingSensor = new StackingSensor(this.m_RaySensor, this.observationStacks);
                 return stackingSensor;
             }
 
-            return m_RaySensor;
+            return this.m_RaySensor;
         }
 
         public static float[] GetRayAngles(int raysPerDirection, float maxRayDegrees)
@@ -90,10 +90,10 @@ namespace MLAgents.Sensor
 
         public override int[] GetObservationShape()
         {
-            var numRays = 2 * raysPerDirection + 1;
-            var numTags = detectableTags == null ? 0 : detectableTags.Count;
+            var numRays = 2 * this.raysPerDirection + 1;
+            var numTags = this.detectableTags == null ? 0 : this.detectableTags.Count;
             var obsSize = (numTags + 2) * numRays;
-            var stacks = observationStacks > 1 ? observationStacks : 1;
+            var stacks = this.observationStacks > 1 ? this.observationStacks : 1;
             return new[] { obsSize * stacks };
         }
 
@@ -102,11 +102,11 @@ namespace MLAgents.Sensor
         /// </summary>
         public void OnDrawGizmos()
         {
-            if (m_RaySensor?.debugDisplayInfo?.rayInfos == null)
+            if (this.m_RaySensor?.debugDisplayInfo?.rayInfos == null)
             {
                 return;
             }
-            var debugInfo = m_RaySensor.debugDisplayInfo;
+            var debugInfo = this.m_RaySensor.debugDisplayInfo;
 
             // Draw "old" observations in a lighter color.
             // Since the agent may not step every frame, this helps de-emphasize "stale" hit information.
@@ -119,17 +119,17 @@ namespace MLAgents.Sensor
                 // these should be the same.
                 var startPositionWorld = rayInfo.worldStart;
                 var endPositionWorld = rayInfo.worldEnd;
-                if (!useWorldPositions)
+                if (!this.useWorldPositions)
                 {
-                    startPositionWorld = transform.TransformPoint(rayInfo.localStart);
-                    endPositionWorld = transform.TransformPoint(rayInfo.localEnd);
+                    startPositionWorld = this.transform.TransformPoint(rayInfo.localStart);
+                    endPositionWorld = this.transform.TransformPoint(rayInfo.localEnd);
                 }
                 var rayDirection = endPositionWorld - startPositionWorld;
                 rayDirection *= rayInfo.hitFraction;
 
                 // hit fraction ^2 will shift "far" hits closer to the hit color
                 var lerpT = rayInfo.hitFraction * rayInfo.hitFraction;
-                var color = Color.Lerp(rayHitColor, rayMissColor, lerpT);
+                var color = Color.Lerp(this.rayHitColor, this.rayMissColor, lerpT);
                 color.a = alpha;
                 Gizmos.color = color;
                 Gizmos.DrawRay(startPositionWorld,rayDirection);
@@ -137,7 +137,7 @@ namespace MLAgents.Sensor
                 // Draw the hit point as a sphere. If using rays to cast (0 radius), use a small sphere.
                 if (rayInfo.castHit)
                 {
-                    var hitRadius = Mathf.Max(sphereCastRadius, .05f);
+                    var hitRadius = Mathf.Max(this.sphereCastRadius, .05f);
                     Gizmos.DrawWireSphere(startPositionWorld + rayDirection, hitRadius);
                 }
             }

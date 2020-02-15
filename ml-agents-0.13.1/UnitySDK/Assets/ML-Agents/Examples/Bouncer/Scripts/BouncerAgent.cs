@@ -17,19 +17,19 @@ public class BouncerAgent : Agent
 
     public override void InitializeAgent()
     {
-        m_Rb = gameObject.GetComponent<Rigidbody>();
-        m_LookDir = Vector3.zero;
+        this.m_Rb = this.gameObject.GetComponent<Rigidbody>();
+        this.m_LookDir = Vector3.zero;
 
         var academy = FindObjectOfType<Academy>();
-        m_ResetParams = academy.FloatProperties;
+        this.m_ResetParams = academy.FloatProperties;
 
-        SetResetParameters();
+        this.SetResetParameters();
     }
 
     public override void CollectObservations()
     {
-        AddVectorObs(gameObject.transform.localPosition);
-        AddVectorObs(target.transform.localPosition);
+        this.AddVectorObs(this.gameObject.transform.localPosition);
+        this.AddVectorObs(this.target.transform.localPosition);
     }
 
     public override void AgentAction(float[] vectorAction)
@@ -39,33 +39,33 @@ public class BouncerAgent : Agent
             vectorAction[i] = Mathf.Clamp(vectorAction[i], -1f, 1f);
         }
         var x = vectorAction[0];
-        var y = ScaleAction(vectorAction[1], 0, 1);
+        var y = this.ScaleAction(vectorAction[1], 0, 1);
         var z = vectorAction[2];
-        m_Rb.AddForce(new Vector3(x, y + 1, z) * strength);
+        this.m_Rb.AddForce(new Vector3(x, y + 1, z) * this.strength);
 
-        AddReward(-0.05f * (
+        this.AddReward(-0.05f * (
             vectorAction[0] * vectorAction[0] +
             vectorAction[1] * vectorAction[1] +
             vectorAction[2] * vectorAction[2]) / 3f);
 
-        m_LookDir = new Vector3(x, y, z);
+        this.m_LookDir = new Vector3(x, y, z);
     }
 
     public override void AgentReset()
     {
-        gameObject.transform.localPosition = new Vector3(
+        this.gameObject.transform.localPosition = new Vector3(
             (1 - 2 * Random.value) * 5, 2, (1 - 2 * Random.value) * 5);
-        m_Rb.velocity = default(Vector3);
-        var environment = gameObject.transform.parent.gameObject;
+        this.m_Rb.velocity = default(Vector3);
+        var environment = this.gameObject.transform.parent.gameObject;
         var targets =
             environment.GetComponentsInChildren<BouncerTarget>();
         foreach (var t in targets)
         {
             t.Respawn();
         }
-        m_JumpLeft = m_NumberJumps;
+        this.m_JumpLeft = this.m_NumberJumps;
 
-        SetResetParameters();
+        this.SetResetParameters();
     }
 
     public override void AgentOnDone()
@@ -74,33 +74,33 @@ public class BouncerAgent : Agent
 
     void FixedUpdate()
     {
-        if (Physics.Raycast(transform.position, new Vector3(0f, -1f, 0f), 0.51f) && m_JumpCooldown <= 0f)
+        if (Physics.Raycast(this.transform.position, new Vector3(0f, -1f, 0f), 0.51f) && this.m_JumpCooldown <= 0f)
         {
-            RequestDecision();
-            m_JumpLeft -= 1;
-            m_JumpCooldown = 0.1f;
-            m_Rb.velocity = default(Vector3);
+            this.RequestDecision();
+            this.m_JumpLeft -= 1;
+            this.m_JumpCooldown = 0.1f;
+            this.m_Rb.velocity = default(Vector3);
         }
 
-        m_JumpCooldown -= Time.fixedDeltaTime;
+        this.m_JumpCooldown -= Time.fixedDeltaTime;
 
-        if (gameObject.transform.position.y < -1)
+        if (this.gameObject.transform.position.y < -1)
         {
-            AddReward(-1);
-            Done();
+            this.AddReward(-1);
+            this.Done();
             return;
         }
 
-        if (gameObject.transform.localPosition.x < -19 || gameObject.transform.localPosition.x > 19
-            || gameObject.transform.localPosition.z < -19 || gameObject.transform.localPosition.z > 19)
+        if (this.gameObject.transform.localPosition.x < -19 || this.gameObject.transform.localPosition.x > 19
+            || this.gameObject.transform.localPosition.z < -19 || this.gameObject.transform.localPosition.z > 19)
         {
-            AddReward(-1);
-            Done();
+            this.AddReward(-1);
+            this.Done();
             return;
         }
-        if (m_JumpLeft == 0)
+        if (this.m_JumpLeft == 0)
         {
-            Done();
+            this.Done();
         }
     }
 
@@ -116,22 +116,22 @@ public class BouncerAgent : Agent
 
     void Update()
     {
-        if (m_LookDir.magnitude > float.Epsilon)
+        if (this.m_LookDir.magnitude > float.Epsilon)
         {
-            bodyObject.transform.rotation = Quaternion.Lerp(bodyObject.transform.rotation,
-                Quaternion.LookRotation(m_LookDir),
+            this.bodyObject.transform.rotation = Quaternion.Lerp(this.bodyObject.transform.rotation,
+                Quaternion.LookRotation(this.m_LookDir),
                 Time.deltaTime * 10f);
         }
     }
 
     public void SetTargetScale()
     {
-        var targetScale = m_ResetParams.GetPropertyWithDefault("target_scale", 1.0f);
-        target.transform.localScale = new Vector3(targetScale, targetScale, targetScale);
+        var targetScale = this.m_ResetParams.GetPropertyWithDefault("target_scale", 1.0f);
+        this.target.transform.localScale = new Vector3(targetScale, targetScale, targetScale);
     }
 
     public void SetResetParameters()
     {
-        SetTargetScale();
+        this.SetTargetScale();
     }
 }

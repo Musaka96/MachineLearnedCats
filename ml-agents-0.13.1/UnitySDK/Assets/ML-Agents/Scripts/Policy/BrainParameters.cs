@@ -48,8 +48,8 @@ namespace MLAgents
             {
                 vectorObservationSize = vectorObservationSize,
                 numStackedVectorObservations = numStackedVectorObservations,
-                vectorActionSize = (int[])vectorActionSize.Clone(),
-                vectorActionDescriptions = (string[])vectorActionDescriptions.Clone(),
+                vectorActionSize = (int[])this.vectorActionSize.Clone(),
+                vectorActionDescriptions = (string[])this.vectorActionDescriptions.Clone(),
                 vectorActionSpaceType = vectorActionSpaceType
             };
         }

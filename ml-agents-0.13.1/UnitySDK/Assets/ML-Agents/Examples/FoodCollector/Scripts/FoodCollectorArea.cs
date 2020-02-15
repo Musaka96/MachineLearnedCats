@@ -14,10 +14,10 @@ public class FoodCollectorArea : Area
     {
         for (int i = 0; i < num; i++)
         {
-            GameObject f = Instantiate(type, new Vector3(Random.Range(-range, range), 1f,
-                Random.Range(-range, range)) + transform.position,
+            GameObject f = Instantiate(type, new Vector3(Random.Range(-this.range, this.range), 1f,
+                Random.Range(-this.range, this.range)) + this.transform.position,
                 Quaternion.Euler(new Vector3(0f, Random.Range(0f, 360f), 90f)));
-            f.GetComponent<FoodLogic>().respawn = respawnFood;
+            f.GetComponent<FoodLogic>().respawn = this.respawnFood;
             f.GetComponent<FoodLogic>().myArea = this;
         }
     }
@@ -26,17 +26,17 @@ public class FoodCollectorArea : Area
     {
         foreach (GameObject agent in agents)
         {
-            if (agent.transform.parent == gameObject.transform)
+            if (agent.transform.parent == this.gameObject.transform)
             {
-                agent.transform.position = new Vector3(Random.Range(-range, range), 2f,
-                    Random.Range(-range, range))
-                    + transform.position;
+                agent.transform.position = new Vector3(Random.Range(-this.range, this.range), 2f,
+                    Random.Range(-this.range, this.range))
+                    + this.transform.position;
                 agent.transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
             }
         }
 
-        CreateFood(numFood, food);
-        CreateFood(numBadFood, badFood);
+        this.CreateFood(this.numFood, this.food);
+        this.CreateFood(this.numBadFood, this.badFood);
     }
 
     public override void ResetArea()

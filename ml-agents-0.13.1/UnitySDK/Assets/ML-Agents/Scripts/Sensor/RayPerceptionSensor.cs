@@ -44,7 +44,7 @@ namespace MLAgents.Sensor
 
             public void Reset()
             {
-                m_Frame = Time.frameCount;
+                this.m_Frame = Time.frameCount;
             }
 
             /// <summary>
@@ -52,7 +52,7 @@ namespace MLAgents.Sensor
             /// </summary>
             public int age
             {
-                get { return Time.frameCount - m_Frame; }
+                get { return Time.frameCount - this.m_Frame; }
             }
 
             public RayInfo[] rayInfos;
@@ -64,7 +64,7 @@ namespace MLAgents.Sensor
 
         public DebugDisplayInfo debugDisplayInfo
         {
-            get { return m_DebugDisplayInfo; }
+            get { return this.m_DebugDisplayInfo; }
         }
 
         public RayPerceptionSensor(string name, float rayDistance, List<string> detectableObjects, float[] angles,
@@ -72,25 +72,25 @@ namespace MLAgents.Sensor
             int rayLayerMask)
         {
             var numObservations = (detectableObjects.Count + 2) * angles.Length;
-            m_Shape = new[] { numObservations };
-            m_Name = name;
+            this.m_Shape = new[] { numObservations };
+            this.m_Name = name;
 
-            m_Observations = new float[numObservations];
+            this.m_Observations = new float[numObservations];
 
-            m_RayDistance = rayDistance;
-            m_DetectableObjects = detectableObjects;
+            this.m_RayDistance = rayDistance;
+            this.m_DetectableObjects = detectableObjects;
             // TODO - preprocess angles, save ray directions instead?
-            m_Angles = angles;
-            m_Transform = transform;
-            m_StartOffset = startOffset;
-            m_EndOffset = endOffset;
-            m_CastRadius = castRadius;
-            m_CastType = castType;
-            m_LayerMask = rayLayerMask;
+            this.m_Angles = angles;
+            this.m_Transform = transform;
+            this.m_StartOffset = startOffset;
+            this.m_EndOffset = endOffset;
+            this.m_CastRadius = castRadius;
+            this.m_CastType = castType;
+            this.m_LayerMask = rayLayerMask;
 
             if (Application.isEditor)
             {
-                m_DebugDisplayInfo = new DebugDisplayInfo();
+                this.m_DebugDisplayInfo = new DebugDisplayInfo();
             }
         }
 
@@ -99,13 +99,13 @@ namespace MLAgents.Sensor
             using (TimerStack.Instance.Scoped("RayPerceptionSensor.Perceive"))
             {
                 PerceiveStatic(
-                    m_RayDistance, m_Angles, m_DetectableObjects, m_StartOffset, m_EndOffset,
-                    m_CastRadius, m_Transform, m_CastType, m_Observations, false, m_LayerMask,
-                    m_DebugDisplayInfo
+                    this.m_RayDistance, this.m_Angles, this.m_DetectableObjects, this.m_StartOffset, this.m_EndOffset,
+                    this.m_CastRadius, this.m_Transform, this.m_CastType, this.m_Observations, false, this.m_LayerMask,
+                    this.m_DebugDisplayInfo
                 );
-                adapter.AddRange(m_Observations);
+                adapter.AddRange(this.m_Observations);
             }
-            return m_Observations.Length;
+            return this.m_Observations.Length;
         }
 
         public void Update()
@@ -114,12 +114,12 @@ namespace MLAgents.Sensor
 
         public int[] GetFloatObservationShape()
         {
-            return m_Shape;
+            return this.m_Shape;
         }
 
         public string GetName()
         {
-            return m_Name;
+            return this.m_Name;
         }
 
         public virtual byte[] GetCompressedObservation()

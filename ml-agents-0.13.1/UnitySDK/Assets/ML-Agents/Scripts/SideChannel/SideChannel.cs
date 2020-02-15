@@ -42,7 +42,7 @@ namespace MLAgents
         /// <param name="data"> The byte array of data to be sent to Python.</param>
         protected void QueueMessageToSend(byte[] data)
         {
-            MessageQueue.Add(data);
+            this.MessageQueue.Add(data);
         }
 
     }

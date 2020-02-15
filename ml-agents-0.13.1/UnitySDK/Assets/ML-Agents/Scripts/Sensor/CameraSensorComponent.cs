@@ -13,12 +13,12 @@ namespace MLAgents.Sensor
 
         public override ISensor CreateSensor()
         {
-            return new CameraSensor(camera, width, height, grayscale, sensorName);
+            return new CameraSensor(this.camera, this.width, this.height, this.grayscale, this.sensorName);
         }
 
         public override int[] GetObservationShape()
         {
-            return new[] { height, width, grayscale ? 1 : 3 };
+            return new[] { this.height, this.width, this.grayscale ? 1 : 3 };
         }
     }
 }

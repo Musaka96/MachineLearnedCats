@@ -30,59 +30,59 @@ namespace MLAgents
             // nop:
             // transform.position.Set(0,8,-32);
             // transform.rotation.Set(15,0,0,1);
-            transform.position = new Vector3(0, 8, -32);
-            transform.rotation = Quaternion.Euler(25, 0, 0);
+            this.transform.position = new Vector3(0, 8, -32);
+            this.transform.rotation = Quaternion.Euler(25, 0, 0);
         }
 
         void Update()
         {
             if (Input.GetMouseButtonDown(1))
             {
-                m_LastMouse = Input.mousePosition; // $CTK reset when we begin
+                this.m_LastMouse = Input.mousePosition; // $CTK reset when we begin
             }
 
-            if (!rotateOnlyIfMousedown ||
-                (rotateOnlyIfMousedown && Input.GetMouseButton(1)))
+            if (!this.rotateOnlyIfMousedown ||
+                (this.rotateOnlyIfMousedown && Input.GetMouseButton(1)))
             {
-                m_LastMouse = Input.mousePosition - m_LastMouse;
-                m_LastMouse = new Vector3(-m_LastMouse.y * camSens, m_LastMouse.x * camSens, 0);
-                m_LastMouse = new Vector3(transform.eulerAngles.x + m_LastMouse.x,
-                    transform.eulerAngles.y + m_LastMouse.y, 0);
-                transform.eulerAngles = m_LastMouse;
-                m_LastMouse = Input.mousePosition;
+                this.m_LastMouse = Input.mousePosition - this.m_LastMouse;
+                this.m_LastMouse = new Vector3(-this.m_LastMouse.y * this.camSens, this.m_LastMouse.x * this.camSens, 0);
+                this.m_LastMouse = new Vector3(this.transform.eulerAngles.x + this.m_LastMouse.x,
+                    this.transform.eulerAngles.y + this.m_LastMouse.y, 0);
+                this.transform.eulerAngles = this.m_LastMouse;
+                this.m_LastMouse = Input.mousePosition;
                 // Mouse  camera angle done.
             }
 
             // Keyboard commands
-            var p = GetBaseInput();
+            var p = this.GetBaseInput();
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                m_TotalRun += Time.deltaTime;
-                p = shiftAdd * m_TotalRun * p;
-                p.x = Mathf.Clamp(p.x, -maxShift, maxShift);
-                p.y = Mathf.Clamp(p.y, -maxShift, maxShift);
-                p.z = Mathf.Clamp(p.z, -maxShift, maxShift);
+                this.m_TotalRun += Time.deltaTime;
+                p = this.shiftAdd * this.m_TotalRun * p;
+                p.x = Mathf.Clamp(p.x, -this.maxShift, this.maxShift);
+                p.y = Mathf.Clamp(p.y, -this.maxShift, this.maxShift);
+                p.z = Mathf.Clamp(p.z, -this.maxShift, this.maxShift);
             }
             else
             {
-                m_TotalRun = Mathf.Clamp(m_TotalRun * 0.5f, 1f, 1000f);
-                p = p * mainSpeed;
+                this.m_TotalRun = Mathf.Clamp(this.m_TotalRun * 0.5f, 1f, 1000f);
+                p = p * this.mainSpeed;
             }
 
             p = p * Time.deltaTime;
-            var newPosition = transform.position;
+            var newPosition = this.transform.position;
             if (Input.GetKey(KeyCode.Space)
-                || (movementStaysFlat && !(rotateOnlyIfMousedown && Input.GetMouseButton(1))))
+                || (this.movementStaysFlat && !(this.rotateOnlyIfMousedown && Input.GetMouseButton(1))))
             {
                 // If player wants to move on X and Z axis only
-                transform.Translate(p);
-                newPosition.x = transform.position.x;
-                newPosition.z = transform.position.z;
-                transform.position = newPosition;
+                this.transform.Translate(p);
+                newPosition.x = this.transform.position.x;
+                newPosition.z = this.transform.position.z;
+                this.transform.position = newPosition;
             }
             else
             {
-                transform.Translate(p);
+                this.transform.Translate(p);
             }
         }
 

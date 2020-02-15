@@ -17,12 +17,12 @@ public class BasicAgent : Agent
 
     public override void InitializeAgent()
     {
-        m_Academy = FindObjectOfType(typeof(BasicAcademy)) as BasicAcademy;
+        this.m_Academy = FindObjectOfType(typeof(BasicAcademy)) as BasicAcademy;
     }
 
     public override void CollectObservations()
     {
-        AddVectorObs(m_Position, 20);
+        this.AddVectorObs(this.m_Position, 20);
     }
 
     public override void AgentAction(float[] vectorAction)
@@ -41,36 +41,36 @@ public class BasicAgent : Agent
                 break;
         }
 
-        m_Position += direction;
-        if (m_Position < m_MinPosition) { m_Position = m_MinPosition; }
-        if (m_Position > m_MaxPosition) { m_Position = m_MaxPosition; }
+        this.m_Position += direction;
+        if (this.m_Position < this.m_MinPosition) { this.m_Position = this.m_MinPosition; }
+        if (this.m_Position > this.m_MaxPosition) { this.m_Position = this.m_MaxPosition; }
 
-        gameObject.transform.position = new Vector3(m_Position - 10f, 0f, 0f);
+        this.gameObject.transform.position = new Vector3(this.m_Position - 10f, 0f, 0f);
 
-        AddReward(-0.01f);
+        this.AddReward(-0.01f);
 
-        if (m_Position == m_SmallGoalPosition)
+        if (this.m_Position == this.m_SmallGoalPosition)
         {
-            Done();
-            AddReward(0.1f);
+            this.Done();
+            this.AddReward(0.1f);
         }
 
-        if (m_Position == m_LargeGoalPosition)
+        if (this.m_Position == this.m_LargeGoalPosition)
         {
-            Done();
-            AddReward(1f);
+            this.Done();
+            this.AddReward(1f);
         }
     }
 
     public override void AgentReset()
     {
-        m_Position = 10;
-        m_MinPosition = 0;
-        m_MaxPosition = 20;
-        m_SmallGoalPosition = 7;
-        m_LargeGoalPosition = 17;
-        smallGoal.transform.position = new Vector3(m_SmallGoalPosition - 10f, 0f, 0f);
-        largeGoal.transform.position = new Vector3(m_LargeGoalPosition - 10f, 0f, 0f);
+        this.m_Position = 10;
+        this.m_MinPosition = 0;
+        this.m_MaxPosition = 20;
+        this.m_SmallGoalPosition = 7;
+        this.m_LargeGoalPosition = 17;
+        this.smallGoal.transform.position = new Vector3(this.m_SmallGoalPosition - 10f, 0f, 0f);
+        this.largeGoal.transform.position = new Vector3(this.m_LargeGoalPosition - 10f, 0f, 0f);
     }
 
     public override float[] Heuristic()
@@ -92,25 +92,25 @@ public class BasicAgent : Agent
 
     public void FixedUpdate()
     {
-        WaitTimeInference();
+        this.WaitTimeInference();
     }
 
     void WaitTimeInference()
     {
-        if (!m_Academy.IsCommunicatorOn)
+        if (!this.m_Academy.IsCommunicatorOn)
         {
-            RequestDecision();
+            this.RequestDecision();
         }
         else
         {
-            if (m_TimeSinceDecision >= timeBetweenDecisionsAtInference)
+            if (this.m_TimeSinceDecision >= this.timeBetweenDecisionsAtInference)
             {
-                m_TimeSinceDecision = 0f;
-                RequestDecision();
+                this.m_TimeSinceDecision = 0f;
+                this.RequestDecision();
             }
             else
             {
-                m_TimeSinceDecision += Time.fixedDeltaTime;
+                this.m_TimeSinceDecision += Time.fixedDeltaTime;
             }
         }
     }

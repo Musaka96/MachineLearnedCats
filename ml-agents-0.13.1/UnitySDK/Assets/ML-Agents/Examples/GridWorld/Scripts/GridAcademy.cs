@@ -7,10 +7,10 @@ public class GridAcademy : Academy
 
     public override void InitializeAcademy()
     {
-        FloatProperties.RegisterCallback("gridSize", f =>
+        this.FloatProperties.RegisterCallback("gridSize", f =>
         {
-            MainCamera.transform.position = new Vector3(-(f - 1) / 2f, f * 1.25f, -(f - 1) / 2f);
-            MainCamera.orthographicSize = (f + 5f) / 2f;
+            this.MainCamera.transform.position = new Vector3(-(f - 1) / 2f, f * 1.25f, -(f - 1) / 2f);
+            this.MainCamera.orthographicSize = (f + 5f) / 2f;
         });
 
     }

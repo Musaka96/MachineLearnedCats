@@ -35,34 +35,34 @@ public class SoccerFieldArea : MonoBehaviour
 
     public IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
     {
-        m_GroundRenderer.material = mat;
+        this.m_GroundRenderer.material = mat;
         yield return new WaitForSeconds(time);
-        m_GroundRenderer.material = m_GroundMaterial;
+        this.m_GroundRenderer.material = this.m_GroundMaterial;
     }
 
     void Awake()
     {
-        m_Academy = FindObjectOfType<SoccerAcademy>();
-        m_GroundRenderer = centerPitch.GetComponent<Renderer>();
-        m_GroundMaterial = m_GroundRenderer.material;
-        canResetBall = true;
-        if (goalTextUI) { goalTextUI.SetActive(false); }
-        ballRb = ball.GetComponent<Rigidbody>();
-        m_BallController = ball.GetComponent<SoccerBallController>();
-        m_BallController.area = this;
-        ballStartingPos = ball.transform.position;
+        this.m_Academy = FindObjectOfType<SoccerAcademy>();
+        this.m_GroundRenderer = this.centerPitch.GetComponent<Renderer>();
+        this.m_GroundMaterial = this.m_GroundRenderer.material;
+        this.canResetBall = true;
+        if (this.goalTextUI) { this.goalTextUI.SetActive(false); }
+        this.ballRb = this.ball.GetComponent<Rigidbody>();
+        this.m_BallController = this.ball.GetComponent<SoccerBallController>();
+        this.m_BallController.area = this;
+        this.ballStartingPos = this.ball.transform.position;
     }
 
     IEnumerator ShowGoalUI()
     {
-        if (goalTextUI) goalTextUI.SetActive(true);
+        if (this.goalTextUI) this.goalTextUI.SetActive(true);
         yield return new WaitForSeconds(.25f);
-        if (goalTextUI) goalTextUI.SetActive(false);
+        if (this.goalTextUI) this.goalTextUI.SetActive(false);
     }
 
     public void AllPlayersDone(float reward)
     {
-        foreach (var ps in playerStates)
+        foreach (var ps in this.playerStates)
         {
             if (ps.agentScript.gameObject.activeInHierarchy)
             {
@@ -77,32 +77,32 @@ public class SoccerFieldArea : MonoBehaviour
 
     public void GoalTouched(AgentSoccer.Team scoredTeam)
     {
-        foreach (var ps in playerStates)
+        foreach (var ps in this.playerStates)
         {
             if (ps.agentScript.team == scoredTeam)
             {
-                RewardOrPunishPlayer(ps, m_Academy.strikerReward, m_Academy.goalieReward);
+                this.RewardOrPunishPlayer(ps, this.m_Academy.strikerReward, this.m_Academy.goalieReward);
             }
             else
             {
-                RewardOrPunishPlayer(ps, m_Academy.strikerPunish, m_Academy.goaliePunish);
+                this.RewardOrPunishPlayer(ps, this.m_Academy.strikerPunish, this.m_Academy.goaliePunish);
             }
-            if (m_Academy.randomizePlayersTeamForTraining)
+            if (this.m_Academy.randomizePlayersTeamForTraining)
             {
                 ps.agentScript.ChooseRandomTeam();
             }
 
             if (scoredTeam == AgentSoccer.Team.Purple)
             {
-                StartCoroutine(GoalScoredSwapGroundMaterial(m_Academy.purpleMaterial, 1));
+                this.StartCoroutine(this.GoalScoredSwapGroundMaterial(this.m_Academy.purpleMaterial, 1));
             }
             else
             {
-                StartCoroutine(GoalScoredSwapGroundMaterial(m_Academy.blueMaterial, 1));
+                this.StartCoroutine(this.GoalScoredSwapGroundMaterial(this.m_Academy.blueMaterial, 1));
             }
-            if (goalTextUI)
+            if (this.goalTextUI)
             {
-                StartCoroutine(ShowGoalUI());
+                this.StartCoroutine(this.ShowGoalUI());
             }
         }
     }
@@ -135,29 +135,29 @@ public class SoccerFieldArea : MonoBehaviour
         {
             xOffset = xOffset * -1f;
         }
-        var randomSpawnPos = ground.transform.position +
+        var randomSpawnPos = this.ground.transform.position +
             new Vector3(xOffset, 0f, 0f)
             + (Random.insideUnitSphere * 2);
-        randomSpawnPos.y = ground.transform.position.y + 2;
+        randomSpawnPos.y = this.ground.transform.position.y + 2;
         return randomSpawnPos;
     }
 
     public Vector3 GetBallSpawnPosition()
     {
-        var randomSpawnPos = ground.transform.position +
+        var randomSpawnPos = this.ground.transform.position +
             new Vector3(0f, 0f, 0f)
             + (Random.insideUnitSphere * 2);
-        randomSpawnPos.y = ground.transform.position.y + 2;
+        randomSpawnPos.y = this.ground.transform.position.y + 2;
         return randomSpawnPos;
     }
 
     public void ResetBall()
     {
-        ball.transform.position = GetBallSpawnPosition();
-        ballRb.velocity = Vector3.zero;
-        ballRb.angularVelocity = Vector3.zero;
+        this.ball.transform.position = this.GetBallSpawnPosition();
+        this.ballRb.velocity = Vector3.zero;
+        this.ballRb.angularVelocity = Vector3.zero;
 
-        var ballScale = m_Academy.FloatProperties.GetPropertyWithDefault("ball_scale", 0.015f);
-        ballRb.transform.localScale = new Vector3(ballScale, ballScale, ballScale);
+        var ballScale = this.m_Academy.FloatProperties.GetPropertyWithDefault("ball_scale", 0.015f);
+        this.ballRb.transform.localScale = new Vector3(ballScale, ballScale, ballScale);
     }
 }

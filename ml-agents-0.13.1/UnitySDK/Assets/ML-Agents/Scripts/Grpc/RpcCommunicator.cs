@@ -57,7 +57,7 @@ namespace MLAgents
         /// <param name="communicatorInitParameters">Communicator parameters.</param>
         public RpcCommunicator(CommunicatorInitParameters communicatorInitParameters)
         {
-            m_CommunicatorInitParameters = communicatorInitParameters;
+            this.m_CommunicatorInitParameters = communicatorInitParameters;
         }
 
         #region Initialization
@@ -80,7 +80,7 @@ namespace MLAgents
             UnityInputProto initializationInput;
             try
             {
-                initializationInput = Initialize(
+                initializationInput = this.Initialize(
                     new UnityOutputProto
                     {
                         RlInitializationOutput = academyParameters
@@ -103,7 +103,7 @@ namespace MLAgents
                 throw new UnityAgentsException(exceptionMessage);
             }
 
-            UpdateEnvironmentWithInput(input.RlInput);
+            this.UpdateEnvironmentWithInput(input.RlInput);
             return initializationInput.RlInitializationInput.ToUnityRLInitParameters();
         }
 
@@ -114,23 +114,23 @@ namespace MLAgents
         /// <param name="brainParameters">Brain parameters needed to send to the trainer.</param>
         public void SubscribeBrain(string brainKey, BrainParameters brainParameters)
         {
-            if (m_CurrentAgents.ContainsKey(brainKey))
+            if (this.m_CurrentAgents.ContainsKey(brainKey))
             {
                 return;
             }
-            m_CurrentAgents[brainKey] = new List<Agent>(k_NumAgents);
-            m_CurrentUnityRlOutput.AgentInfos.Add(
+            this.m_CurrentAgents[brainKey] = new List<Agent>(k_NumAgents);
+            this.m_CurrentUnityRlOutput.AgentInfos.Add(
                 brainKey,
                 new UnityRLOutputProto.Types.ListAgentInfoProto()
             );
 
-            CacheBrainParameters(brainKey, brainParameters);
+            this.CacheBrainParameters(brainKey, brainParameters);
         }
 
         void UpdateEnvironmentWithInput(UnityRLInputProto rlInput)
         {
-            ProcessSideChannelData(m_SideChannels, rlInput.SideChannel.ToArray());
-            SendCommandEvent(rlInput.Command);
+            ProcessSideChannelData(this.m_SideChannels, rlInput.SideChannel.ToArray());
+            this.SendCommandEvent(rlInput.Command);
 
         }
 
@@ -138,17 +138,17 @@ namespace MLAgents
             out UnityInputProto unityInput)
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
-            m_IsOpen = true;
+            this.m_IsOpen = true;
             var channel = new Channel(
-                "localhost:" + m_CommunicatorInitParameters.port,
+                "localhost:" + this.m_CommunicatorInitParameters.port,
                 ChannelCredentials.Insecure);
 
-            m_Client = new UnityToExternalProto.UnityToExternalProtoClient(channel);
-            var result = m_Client.Exchange(WrapMessage(unityOutput, 200));
-            unityInput = m_Client.Exchange(WrapMessage(null, 200)).UnityInput;
+            this.m_Client = new UnityToExternalProto.UnityToExternalProtoClient(channel);
+            var result = this.m_Client.Exchange(WrapMessage(unityOutput, 200));
+            unityInput = this.m_Client.Exchange(WrapMessage(null, 200)).UnityInput;
 #if UNITY_EDITOR
 #if UNITY_2017_2_OR_NEWER
-            EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
+            EditorApplication.playModeStateChanged += this.HandleOnPlayModeChanged;
 #else
             EditorApplication.playmodeStateChanged += HandleOnPlayModeChanged;
 #endif
@@ -170,15 +170,15 @@ namespace MLAgents
         public void Dispose()
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
-            if (!m_IsOpen)
+            if (!this.m_IsOpen)
             {
                 return;
             }
 
             try
             {
-                m_Client.Exchange(WrapMessage(null, 400));
-                m_IsOpen = false;
+                this.m_Client.Exchange(WrapMessage(null, 400));
+                this.m_IsOpen = false;
             }
             catch
             {
@@ -221,31 +221,31 @@ namespace MLAgents
 
         public void DecideBatch()
         {
-            if (m_CurrentAgents.Values.All(l => l.Count == 0))
+            if (this.m_CurrentAgents.Values.All(l => l.Count == 0))
             {
                 return;
             }
-            foreach (var brainKey in m_CurrentAgents.Keys)
+            foreach (var brainKey in this.m_CurrentAgents.Keys)
             {
                 using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
                 {
-                    if (m_CurrentAgents[brainKey].Count > 0)
+                    if (this.m_CurrentAgents[brainKey].Count > 0)
                     {
-                        foreach (var agent in m_CurrentAgents[brainKey])
+                        foreach (var agent in this.m_CurrentAgents[brainKey])
                         {
                             // Update the sensor data on the AgentInfo
                             agent.GenerateSensorData();
                             var agentInfoProto = agent.Info.ToAgentInfoProto();
-                            m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
+                            this.m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
                         }
 
                     }
                 }
             }
-            SendBatchedMessageHelper();
-            foreach (var brainKey in m_CurrentAgents.Keys)
+            this.SendBatchedMessageHelper();
+            foreach (var brainKey in this.m_CurrentAgents.Keys)
             {
-                m_CurrentAgents[brainKey].Clear();
+                this.m_CurrentAgents[brainKey].Clear();
             }
         }
 
@@ -256,7 +256,7 @@ namespace MLAgents
         /// <param name="agent">Agent info.</param>
         public void PutObservations(string brainKey, Agent agent)
         {
-            m_CurrentAgents[brainKey].Add(agent);
+            this.m_CurrentAgents[brainKey].Add(agent);
         }
 
         /// <summary>
@@ -269,21 +269,21 @@ namespace MLAgents
             {
                 RlOutput = m_CurrentUnityRlOutput,
             };
-            var tempUnityRlInitializationOutput = GetTempUnityRlInitializationOutput();
+            var tempUnityRlInitializationOutput = this.GetTempUnityRlInitializationOutput();
             if (tempUnityRlInitializationOutput != null)
             {
                 message.RlInitializationOutput = tempUnityRlInitializationOutput;
             }
 
-            byte[] messageAggregated = GetSideChannelMessage(m_SideChannels);
+            byte[] messageAggregated = GetSideChannelMessage(this.m_SideChannels);
             message.RlOutput.SideChannel = ByteString.CopyFrom(messageAggregated);
 
-            var input = Exchange(message);
-            UpdateSentBrainParameters(tempUnityRlInitializationOutput);
+            var input = this.Exchange(message);
+            this.UpdateSentBrainParameters(tempUnityRlInitializationOutput);
 
-            foreach (var k in m_CurrentUnityRlOutput.AgentInfos.Keys)
+            foreach (var k in this.m_CurrentUnityRlOutput.AgentInfos.Keys)
             {
-                m_CurrentUnityRlOutput.AgentInfos[k].Value.Clear();
+                this.m_CurrentUnityRlOutput.AgentInfos[k].Value.Clear();
             }
 
             var rlInput = input?.RlInput;
@@ -293,12 +293,12 @@ namespace MLAgents
                 return;
             }
 
-            UpdateEnvironmentWithInput(rlInput);
+            this.UpdateEnvironmentWithInput(rlInput);
 
-            m_LastActionsReceived.Clear();
+            this.m_LastActionsReceived.Clear();
             foreach (var brainName in rlInput.AgentActions.Keys)
             {
-                if (!m_CurrentAgents[brainName].Any())
+                if (!this.m_CurrentAgents[brainName].Any())
                 {
                     continue;
                 }
@@ -309,12 +309,12 @@ namespace MLAgents
                 }
 
                 var agentActions = rlInput.AgentActions[brainName].ToAgentActionList();
-                var numAgents = m_CurrentAgents[brainName].Count;
+                var numAgents = this.m_CurrentAgents[brainName].Count;
                 var agentActionDict = new Dictionary<Agent, AgentAction>(numAgents);
-                m_LastActionsReceived[brainName] = agentActionDict;
+                this.m_LastActionsReceived[brainName] = agentActionDict;
                 for (var i = 0; i < numAgents; i++)
                 {
-                    var agent = m_CurrentAgents[brainName][i];
+                    var agent = this.m_CurrentAgents[brainName][i];
                     var agentAction = agentActions[i];
                     agentActionDict[agent] = agentAction;
                     agent.UpdateAgentAction(agentAction);
@@ -324,7 +324,7 @@ namespace MLAgents
 
         public Dictionary<Agent, AgentAction> GetActions(string key)
         {
-            return m_LastActionsReceived[key];
+            return this.m_LastActionsReceived[key];
         }
 
         /// <summary>
@@ -335,19 +335,19 @@ namespace MLAgents
         UnityInputProto Exchange(UnityOutputProto unityOutput)
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
-            if (!m_IsOpen)
+            if (!this.m_IsOpen)
             {
                 return null;
             }
             try
             {
-                var message = m_Client.Exchange(WrapMessage(unityOutput, 200));
+                var message = this.m_Client.Exchange(WrapMessage(unityOutput, 200));
                 if (message.Header.Status == 200)
                 {
                     return message.UnityInput;
                 }
 
-                m_IsOpen = false;
+                this.m_IsOpen = false;
                 // Not sure if the quit command is actually sent when a
                 // non 200 message is received.  Notify that we are indeed
                 // quitting.
@@ -356,7 +356,7 @@ namespace MLAgents
             }
             catch
             {
-                m_IsOpen = false;
+                this.m_IsOpen = false;
                 QuitCommandReceived?.Invoke();
                 return null;
             }
@@ -383,28 +383,28 @@ namespace MLAgents
 
         void CacheBrainParameters(string brainKey, BrainParameters brainParameters)
         {
-            if (m_SentBrainKeys.Contains(brainKey))
+            if (this.m_SentBrainKeys.Contains(brainKey))
             {
                 return;
             }
 
             // TODO We should check that if m_unsentBrainKeys has brainKey, it equals brainParameters
-            m_UnsentBrainKeys[brainKey] = brainParameters;
+            this.m_UnsentBrainKeys[brainKey] = brainParameters;
         }
 
         UnityRLInitializationOutputProto GetTempUnityRlInitializationOutput()
         {
             UnityRLInitializationOutputProto output = null;
-            foreach (var brainKey in m_UnsentBrainKeys.Keys)
+            foreach (var brainKey in this.m_UnsentBrainKeys.Keys)
             {
-                if (m_CurrentUnityRlOutput.AgentInfos.ContainsKey(brainKey))
+                if (this.m_CurrentUnityRlOutput.AgentInfos.ContainsKey(brainKey))
                 {
                     if (output == null)
                     {
                         output = new UnityRLInitializationOutputProto();
                     }
 
-                    var brainParameters = m_UnsentBrainKeys[brainKey];
+                    var brainParameters = this.m_UnsentBrainKeys[brainKey];
                     output.BrainParameters.Add(brainParameters.ToProto(brainKey, true));
                 }
             }
@@ -421,8 +421,8 @@ namespace MLAgents
 
             foreach (var brainProto in output.BrainParameters)
             {
-                m_SentBrainKeys.Add(brainProto.BrainName);
-                m_UnsentBrainKeys.Remove(brainProto.BrainName);
+                this.m_SentBrainKeys.Add(brainProto.BrainName);
+                this.m_UnsentBrainKeys.Remove(brainProto.BrainName);
             }
         }
 
@@ -438,13 +438,13 @@ namespace MLAgents
         /// <param name="sideChannel"> The side channel to be registered.</param>
         public void RegisterSideChannel(SideChannel sideChannel)
         {
-            if (m_SideChannels.ContainsKey(sideChannel.ChannelType()))
+            if (this.m_SideChannels.ContainsKey(sideChannel.ChannelType()))
             {
                 throw new UnityAgentsException(string.Format(
                 "A side channel with type index {} is already registered. You cannot register multiple " +
                 "side channels of the same type."));
             }
-            m_SideChannels.Add(sideChannel.ChannelType(), sideChannel);
+            this.m_SideChannels.Add(sideChannel.ChannelType(), sideChannel);
         }
 
         /// <summary>
@@ -535,7 +535,7 @@ namespace MLAgents
             // This method is run whenever the playmode state is changed.
             if (state == PlayModeStateChange.ExitingPlayMode)
             {
-                Dispose();
+                this.Dispose();
             }
         }
 

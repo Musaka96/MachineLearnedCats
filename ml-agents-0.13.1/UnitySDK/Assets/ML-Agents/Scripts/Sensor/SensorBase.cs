@@ -25,7 +25,7 @@ namespace MLAgents.Sensor
             // TODO reuse buffer for similar agents, don't call GetFloatObservationShape()
             var numFloats = this.ObservationSize();
             float[] buffer = new float[numFloats];
-            WriteObservation(buffer);
+            this.WriteObservation(buffer);
 
             adapter.AddRange(buffer);
 

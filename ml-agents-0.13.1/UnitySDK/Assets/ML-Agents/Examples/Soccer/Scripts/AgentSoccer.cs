@@ -34,50 +34,50 @@ public class AgentSoccer : Agent
 
     public void ChooseRandomTeam()
     {
-        team = (Team)Random.Range(0, 2);
-        if (team == Team.Purple)
+        this.team = (Team)Random.Range(0, 2);
+        if (this.team == Team.Purple)
         {
-            JoinPurpleTeam(agentRole);
+            this.JoinPurpleTeam(this.agentRole);
         }
         else
         {
-            JoinBlueTeam(agentRole);
+            this.JoinBlueTeam(this.agentRole);
         }
     }
 
     public void JoinPurpleTeam(AgentRole role)
     {
-        agentRole = role;
-        team = Team.Purple;
-        m_AgentRenderer.material = m_Academy.purpleMaterial;
-        tag = "purpleAgent";
+        this.agentRole = role;
+        this.team = Team.Purple;
+        this.m_AgentRenderer.material = this.m_Academy.purpleMaterial;
+        this.tag = "purpleAgent";
     }
 
     public void JoinBlueTeam(AgentRole role)
     {
-        agentRole = role;
-        team = Team.Blue;
-        m_AgentRenderer.material = m_Academy.blueMaterial;
-        tag = "blueAgent";
+        this.agentRole = role;
+        this.team = Team.Blue;
+        this.m_AgentRenderer.material = this.m_Academy.blueMaterial;
+        this.tag = "blueAgent";
     }
 
     public override void InitializeAgent()
     {
         base.InitializeAgent();
-        m_AgentRenderer = GetComponentInChildren<Renderer>();
-        m_Academy = FindObjectOfType<SoccerAcademy>();
-        agentRb = GetComponent<Rigidbody>();
-        agentRb.maxAngularVelocity = 500;
+        this.m_AgentRenderer = this.GetComponentInChildren<Renderer>();
+        this.m_Academy = FindObjectOfType<SoccerAcademy>();
+        this.agentRb = this.GetComponent<Rigidbody>();
+        this.agentRb.maxAngularVelocity = 500;
 
         var playerState = new PlayerState
         {
             agentRb = agentRb,
-            startingPos = transform.position,
+            startingPos = this.transform.position,
             agentScript = this,
         };
-        area.playerStates.Add(playerState);
-        m_PlayerIndex = area.playerStates.IndexOf(playerState);
-        playerState.playerIndex = m_PlayerIndex;
+        this.area.playerStates.Add(playerState);
+        this.m_PlayerIndex = this.area.playerStates.IndexOf(playerState);
+        playerState.playerIndex = this.m_PlayerIndex;
     }
 
     public void MoveAgent(float[] act)
@@ -88,70 +88,70 @@ public class AgentSoccer : Agent
         var action = Mathf.FloorToInt(act[0]);
 
         // Goalies and Strikers have slightly different action spaces.
-        if (agentRole == AgentRole.Goalie)
+        if (this.agentRole == AgentRole.Goalie)
         {
-            m_KickPower = 0f;
+            this.m_KickPower = 0f;
             switch (action)
             {
                 case 1:
-                    dirToGo = transform.forward * 1f;
-                    m_KickPower = 1f;
+                    dirToGo = this.transform.forward * 1f;
+                    this.m_KickPower = 1f;
                     break;
                 case 2:
-                    dirToGo = transform.forward * -1f;
+                    dirToGo = this.transform.forward * -1f;
                     break;
                 case 4:
-                    dirToGo = transform.right * -1f;
+                    dirToGo = this.transform.right * -1f;
                     break;
                 case 3:
-                    dirToGo = transform.right * 1f;
+                    dirToGo = this.transform.right * 1f;
                     break;
             }
         }
         else
         {
-            m_KickPower = 0f;
+            this.m_KickPower = 0f;
             switch (action)
             {
                 case 1:
-                    dirToGo = transform.forward * 1f;
-                    m_KickPower = 1f;
+                    dirToGo = this.transform.forward * 1f;
+                    this.m_KickPower = 1f;
                     break;
                 case 2:
-                    dirToGo = transform.forward * -1f;
+                    dirToGo = this.transform.forward * -1f;
                     break;
                 case 3:
-                    rotateDir = transform.up * 1f;
+                    rotateDir = this.transform.up * 1f;
                     break;
                 case 4:
-                    rotateDir = transform.up * -1f;
+                    rotateDir = this.transform.up * -1f;
                     break;
                 case 5:
-                    dirToGo = transform.right * -0.75f;
+                    dirToGo = this.transform.right * -0.75f;
                     break;
                 case 6:
-                    dirToGo = transform.right * 0.75f;
+                    dirToGo = this.transform.right * 0.75f;
                     break;
             }
         }
-        transform.Rotate(rotateDir, Time.deltaTime * 100f);
-        agentRb.AddForce(dirToGo * m_Academy.agentRunSpeed,
+        this.transform.Rotate(rotateDir, Time.deltaTime * 100f);
+        this.agentRb.AddForce(dirToGo * this.m_Academy.agentRunSpeed,
             ForceMode.VelocityChange);
     }
 
     public override void AgentAction(float[] vectorAction)
     {
         // Existential penalty for strikers.
-        if (agentRole == AgentRole.Striker)
+        if (this.agentRole == AgentRole.Striker)
         {
-            AddReward(-1f / 3000f);
+            this.AddReward(-1f / 3000f);
         }
         // Existential bonus for goalies.
-        if (agentRole == AgentRole.Goalie)
+        if (this.agentRole == AgentRole.Goalie)
         {
-            AddReward(1f / 3000f);
+            this.AddReward(1f / 3000f);
         }
-        MoveAgent(vectorAction);
+        this.MoveAgent(vectorAction);
     }
 
     /// <summary>
@@ -159,10 +159,10 @@ public class AgentSoccer : Agent
     /// </summary>
     void OnCollisionEnter(Collision c)
     {
-        var force = 2000f * m_KickPower;
+        var force = 2000f * this.m_KickPower;
         if (c.gameObject.CompareTag("ball"))
         {
-            var dir = c.contacts[0].point - transform.position;
+            var dir = c.contacts[0].point - this.transform.position;
             dir = dir.normalized;
             c.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);
         }
@@ -170,29 +170,29 @@ public class AgentSoccer : Agent
 
     public override void AgentReset()
     {
-        if (m_Academy.randomizePlayersTeamForTraining)
+        if (this.m_Academy.randomizePlayersTeamForTraining)
         {
-            ChooseRandomTeam();
+            this.ChooseRandomTeam();
         }
 
-        if (team == Team.Purple)
+        if (this.team == Team.Purple)
         {
-            JoinPurpleTeam(agentRole);
-            transform.rotation = Quaternion.Euler(0f, -90f, 0f);
+            this.JoinPurpleTeam(this.agentRole);
+            this.transform.rotation = Quaternion.Euler(0f, -90f, 0f);
         }
         else
         {
-            JoinBlueTeam(agentRole);
-            transform.rotation = Quaternion.Euler(0f, 90f, 0f);
+            this.JoinBlueTeam(this.agentRole);
+            this.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
         }
-        transform.position = area.GetRandomSpawnPos(agentRole, team);
-        agentRb.velocity = Vector3.zero;
-        agentRb.angularVelocity = Vector3.zero;
-        SetResetParameters();
+        this.transform.position = this.area.GetRandomSpawnPos(this.agentRole, this.team);
+        this.agentRb.velocity = Vector3.zero;
+        this.agentRb.angularVelocity = Vector3.zero;
+        this.SetResetParameters();
     }
 
     public void SetResetParameters()
     {
-        area.ResetBall();
+        this.area.ResetBall();
     }
 }

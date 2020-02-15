@@ -12,29 +12,29 @@ namespace MLAgents.Sensor
 
         public RenderTextureSensor(RenderTexture renderTexture, bool grayscale, string name)
         {
-            m_RenderTexture = renderTexture;
+            this.m_RenderTexture = renderTexture;
             var width = renderTexture != null ? renderTexture.width : 0;
             var height = renderTexture != null ? renderTexture.height : 0;
-            m_Grayscale = grayscale;
-            m_Name = name;
-            m_Shape = new[] { height, width, grayscale ? 1 : 3 };
+            this.m_Grayscale = grayscale;
+            this.m_Name = name;
+            this.m_Shape = new[] { height, width, grayscale ? 1 : 3 };
         }
 
         public string GetName()
         {
-            return m_Name;
+            return this.m_Name;
         }
 
         public int[] GetFloatObservationShape()
         {
-            return m_Shape;
+            return this.m_Shape;
         }
 
         public byte[] GetCompressedObservation()
         {
             using(TimerStack.Instance.Scoped("RenderTexSensor.GetCompressedObservation"))
             {
-                var texture = ObservationToTexture(m_RenderTexture);
+                var texture = ObservationToTexture(this.m_RenderTexture);
                 // TODO support more types here, e.g. JPG
                 var compressed = texture.EncodeToPNG();
                 UnityEngine.Object.Destroy(texture);
@@ -46,8 +46,8 @@ namespace MLAgents.Sensor
         {
             using (TimerStack.Instance.Scoped("RenderTexSensor.GetCompressedObservation"))
             {
-                var texture = ObservationToTexture(m_RenderTexture);
-                var numWritten = Utilities.TextureToTensorProxy(texture, adapter, m_Grayscale);
+                var texture = ObservationToTexture(this.m_RenderTexture);
+                var numWritten = Utilities.TextureToTensorProxy(texture, adapter, this.m_Grayscale);
                 UnityEngine.Object.Destroy(texture);
                 return numWritten;
             }

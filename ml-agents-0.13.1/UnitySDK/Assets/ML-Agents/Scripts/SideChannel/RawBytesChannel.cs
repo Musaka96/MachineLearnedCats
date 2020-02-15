@@ -14,16 +14,16 @@ namespace MLAgents
         /// the same on Python and Unity.</param>
         public RawBytesChannel(int channelId = 0)
         {
-            m_ChannelId = channelId;
+            this.m_ChannelId = channelId;
         }
         public override int ChannelType()
         {
-            return (int)SideChannelType.RawBytesChannelStart + m_ChannelId;
+            return (int)SideChannelType.RawBytesChannelStart + this.m_ChannelId;
         }
 
         public override void OnMessageReceived(byte[] data)
         {
-            m_MessagesReceived.Add(data);
+            this.m_MessagesReceived.Add(data);
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace MLAgents
         /// <param name="data"> The byte array of data to send to Python.</param>
         public void SendRawBytes(byte[] data)
         {
-            QueueMessageToSend(data);
+            this.QueueMessageToSend(data);
         }
 
         /// <summary>
@@ -44,8 +44,8 @@ namespace MLAgents
         public IList<byte[]> GetAndClearReceivedMessages()
         {
             var result = new List<byte[]>();
-            result.AddRange(m_MessagesReceived);
-            m_MessagesReceived.Clear();
+            result.AddRange(this.m_MessagesReceived);
+            this.m_MessagesReceived.Clear();
             return result;
         }
 
@@ -58,7 +58,7 @@ namespace MLAgents
         public IList<byte[]> GetReceivedMessages()
         {
             var result = new List<byte[]>();
-            result.AddRange(m_MessagesReceived);
+            result.AddRange(this.m_MessagesReceived);
             return result;
         }
     }

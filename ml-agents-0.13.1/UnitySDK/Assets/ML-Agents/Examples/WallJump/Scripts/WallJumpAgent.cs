@@ -43,23 +43,23 @@ public class WallJumpAgent : Agent
 
     public override void InitializeAgent()
     {
-        m_Academy = FindObjectOfType<WallJumpAcademy>();
-        m_Configuration = Random.Range(0, 5);
+        this.m_Academy = FindObjectOfType<WallJumpAcademy>();
+        this.m_Configuration = Random.Range(0, 5);
 
-        m_AgentRb = GetComponent<Rigidbody>();
-        m_ShortBlockRb = shortBlock.GetComponent<Rigidbody>();
-        m_SpawnAreaBounds = spawnArea.GetComponent<Collider>().bounds;
-        m_GroundRenderer = ground.GetComponent<Renderer>();
-        m_GroundMaterial = m_GroundRenderer.material;
+        this.m_AgentRb = this.GetComponent<Rigidbody>();
+        this.m_ShortBlockRb = this.shortBlock.GetComponent<Rigidbody>();
+        this.m_SpawnAreaBounds = this.spawnArea.GetComponent<Collider>().bounds;
+        this.m_GroundRenderer = this.ground.GetComponent<Renderer>();
+        this.m_GroundMaterial = this.m_GroundRenderer.material;
 
-        spawnArea.SetActive(false);
+        this.spawnArea.SetActive(false);
     }
 
     // Begin the jump sequence
     public void Jump()
     {
-        jumpingTime = 0.2f;
-        m_JumpStartingPos = m_AgentRb.position;
+        this.jumpingTime = 0.2f;
+        this.m_JumpStartingPos = this.m_AgentRb.position;
     }
 
     /// <summary>
@@ -72,17 +72,17 @@ public class WallJumpAgent : Agent
     {
         if (!smallCheck)
         {
-            hitGroundColliders = new Collider[3];
-            var o = gameObject;
+            this.hitGroundColliders = new Collider[3];
+            var o = this.gameObject;
             Physics.OverlapBoxNonAlloc(
                 o.transform.position + new Vector3(0, -0.05f, 0),
                 new Vector3(0.95f / 2f, 0.5f, 0.95f / 2f),
-                hitGroundColliders,
+                this.hitGroundColliders,
                 o.transform.rotation);
             var grounded = false;
-            foreach (var col in hitGroundColliders)
+            foreach (var col in this.hitGroundColliders)
             {
-                if (col != null && col.transform != transform &&
+                if (col != null && col.transform != this.transform &&
                     (col.CompareTag("walkableSurface") ||
                      col.CompareTag("block") ||
                      col.CompareTag("wall")))
@@ -96,7 +96,7 @@ public class WallJumpAgent : Agent
         else
         {
             RaycastHit hit;
-            Physics.Raycast(transform.position + new Vector3(0, -0.05f, 0), -Vector3.up, out hit,
+            Physics.Raycast(this.transform.position + new Vector3(0, -0.05f, 0), -Vector3.up, out hit,
                 1f);
 
             if (hit.collider != null &&
@@ -134,10 +134,10 @@ public class WallJumpAgent : Agent
 
     public override void CollectObservations()
     {
-        var agentPos = m_AgentRb.position - ground.transform.position;
+        var agentPos = this.m_AgentRb.position - this.ground.transform.position;
 
-        AddVectorObs(agentPos / 20f);
-        AddVectorObs(DoGroundCheck(true) ? 1 : 0);
+        this.AddVectorObs(agentPos / 20f);
+        this.AddVectorObs(this.DoGroundCheck(true) ? 1 : 0);
     }
 
     /// <summary>
@@ -146,12 +146,12 @@ public class WallJumpAgent : Agent
     /// <returns>The random spawn position.</returns>
     public Vector3 GetRandomSpawnPos()
     {
-        var randomPosX = Random.Range(-m_SpawnAreaBounds.extents.x,
-            m_SpawnAreaBounds.extents.x);
-        var randomPosZ = Random.Range(-m_SpawnAreaBounds.extents.z,
-            m_SpawnAreaBounds.extents.z);
+        var randomPosX = Random.Range(-this.m_SpawnAreaBounds.extents.x,
+            this.m_SpawnAreaBounds.extents.x);
+        var randomPosZ = Random.Range(-this.m_SpawnAreaBounds.extents.z,
+            this.m_SpawnAreaBounds.extents.z);
 
-        var randomSpawnPos = spawnArea.transform.position +
+        var randomSpawnPos = this.spawnArea.transform.position +
             new Vector3(randomPosX, 0.45f, randomPosZ);
         return randomSpawnPos;
     }
@@ -164,16 +164,16 @@ public class WallJumpAgent : Agent
     /// <param name="time">The time the material will remain.</param>
     IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
     {
-        m_GroundRenderer.material = mat;
+        this.m_GroundRenderer.material = mat;
         yield return new WaitForSeconds(time); //wait for 2 sec
-        m_GroundRenderer.material = m_GroundMaterial;
+        this.m_GroundRenderer.material = this.m_GroundMaterial;
     }
 
     public void MoveAgent(float[] act)
     {
-        AddReward(-0.0005f);
-        var smallGrounded = DoGroundCheck(true);
-        var largeGrounded = DoGroundCheck(false);
+        this.AddReward(-0.0005f);
+        var smallGrounded = this.DoGroundCheck(true);
+        var largeGrounded = this.DoGroundCheck(false);
 
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
@@ -183,56 +183,56 @@ public class WallJumpAgent : Agent
         var jumpAction = (int)act[3];
 
         if (dirToGoForwardAction == 1)
-            dirToGo = (largeGrounded ? 1f : 0.5f) * 1f * transform.forward;
+            dirToGo = (largeGrounded ? 1f : 0.5f) * 1f * this.transform.forward;
         else if (dirToGoForwardAction == 2)
-            dirToGo = (largeGrounded ? 1f : 0.5f) * -1f * transform.forward;
+            dirToGo = (largeGrounded ? 1f : 0.5f) * -1f * this.transform.forward;
         if (rotateDirAction == 1)
-            rotateDir = transform.up * -1f;
+            rotateDir = this.transform.up * -1f;
         else if (rotateDirAction == 2)
-            rotateDir = transform.up * 1f;
+            rotateDir = this.transform.up * 1f;
         if (dirToGoSideAction == 1)
-            dirToGo = (largeGrounded ? 1f : 0.5f) * -0.6f * transform.right;
+            dirToGo = (largeGrounded ? 1f : 0.5f) * -0.6f * this.transform.right;
         else if (dirToGoSideAction == 2)
-            dirToGo = (largeGrounded ? 1f : 0.5f) * 0.6f * transform.right;
+            dirToGo = (largeGrounded ? 1f : 0.5f) * 0.6f * this.transform.right;
         if (jumpAction == 1)
-            if ((jumpingTime <= 0f) && smallGrounded)
+            if ((this.jumpingTime <= 0f) && smallGrounded)
             {
-                Jump();
+                this.Jump();
             }
 
-        transform.Rotate(rotateDir, Time.fixedDeltaTime * 300f);
-        m_AgentRb.AddForce(dirToGo * m_Academy.agentRunSpeed,
+        this.transform.Rotate(rotateDir, Time.fixedDeltaTime * 300f);
+        this.m_AgentRb.AddForce(dirToGo * this.m_Academy.agentRunSpeed,
             ForceMode.VelocityChange);
 
-        if (jumpingTime > 0f)
+        if (this.jumpingTime > 0f)
         {
-            m_JumpTargetPos =
-                new Vector3(m_AgentRb.position.x,
-                    m_JumpStartingPos.y + m_Academy.agentJumpHeight,
-                    m_AgentRb.position.z) + dirToGo;
-            MoveTowards(m_JumpTargetPos, m_AgentRb, m_Academy.agentJumpVelocity,
-                m_Academy.agentJumpVelocityMaxChange);
+            this.m_JumpTargetPos =
+                new Vector3(this.m_AgentRb.position.x,
+                    this.m_JumpStartingPos.y + this.m_Academy.agentJumpHeight,
+                    this.m_AgentRb.position.z) + dirToGo;
+            this.MoveTowards(this.m_JumpTargetPos, this.m_AgentRb, this.m_Academy.agentJumpVelocity,
+                this.m_Academy.agentJumpVelocityMaxChange);
         }
 
-        if (!(jumpingTime > 0f) && !largeGrounded)
+        if (!(this.jumpingTime > 0f) && !largeGrounded)
         {
-            m_AgentRb.AddForce(
-                Vector3.down * fallingForce, ForceMode.Acceleration);
+            this.m_AgentRb.AddForce(
+                Vector3.down * this.fallingForce, ForceMode.Acceleration);
         }
-        jumpingTime -= Time.fixedDeltaTime;
+        this.jumpingTime -= Time.fixedDeltaTime;
     }
 
     public override void AgentAction(float[] vectorAction)
     {
-        MoveAgent(vectorAction);
-        if ((!Physics.Raycast(m_AgentRb.position, Vector3.down, 20))
-            || (!Physics.Raycast(m_ShortBlockRb.position, Vector3.down, 20)))
+        this.MoveAgent(vectorAction);
+        if ((!Physics.Raycast(this.m_AgentRb.position, Vector3.down, 20))
+            || (!Physics.Raycast(this.m_ShortBlockRb.position, Vector3.down, 20)))
         {
-            Done();
-            SetReward(-1f);
-            ResetBlock(m_ShortBlockRb);
-            StartCoroutine(
-                GoalScoredSwapGroundMaterial(m_Academy.failMaterial, .5f));
+            this.Done();
+            this.SetReward(-1f);
+            this.ResetBlock(this.m_ShortBlockRb);
+            this.StartCoroutine(
+                this.GoalScoredSwapGroundMaterial(this.m_Academy.failMaterial, .5f));
         }
     }
 
@@ -262,38 +262,38 @@ public class WallJumpAgent : Agent
     // Detect when the agent hits the goal
     void OnTriggerStay(Collider col)
     {
-        if (col.gameObject.CompareTag("goal") && DoGroundCheck(true))
+        if (col.gameObject.CompareTag("goal") && this.DoGroundCheck(true))
         {
-            SetReward(1f);
-            Done();
-            StartCoroutine(
-                GoalScoredSwapGroundMaterial(m_Academy.goalScoredMaterial, 2));
+            this.SetReward(1f);
+            this.Done();
+            this.StartCoroutine(
+                this.GoalScoredSwapGroundMaterial(this.m_Academy.goalScoredMaterial, 2));
         }
     }
 
     //Reset the orange block position
     void ResetBlock(Rigidbody blockRb)
     {
-        blockRb.transform.position = GetRandomSpawnPos();
+        blockRb.transform.position = this.GetRandomSpawnPos();
         blockRb.velocity = Vector3.zero;
         blockRb.angularVelocity = Vector3.zero;
     }
 
     public override void AgentReset()
     {
-        ResetBlock(m_ShortBlockRb);
-        transform.localPosition = new Vector3(
+        this.ResetBlock(this.m_ShortBlockRb);
+        this.transform.localPosition = new Vector3(
             18 * (Random.value - 0.5f), 1, -12);
-        m_Configuration = Random.Range(0, 5);
-        m_AgentRb.velocity = default(Vector3);
+        this.m_Configuration = Random.Range(0, 5);
+        this.m_AgentRb.velocity = default(Vector3);
     }
 
     void FixedUpdate()
     {
-        if (m_Configuration != -1)
+        if (this.m_Configuration != -1)
         {
-            ConfigureAgent(m_Configuration);
-            m_Configuration = -1;
+            this.ConfigureAgent(this.m_Configuration);
+            this.m_Configuration = -1;
         }
     }
 
@@ -307,36 +307,36 @@ public class WallJumpAgent : Agent
     /// Other : Tall wall and BigWallBrain. </param>
     void ConfigureAgent(int config)
     {
-        var localScale = wall.transform.localScale;
+        var localScale = this.wall.transform.localScale;
         if (config == 0)
         {
             localScale = new Vector3(
                 localScale.x,
-                m_Academy.FloatProperties.GetPropertyWithDefault("no_wall_height", 0),
+                this.m_Academy.FloatProperties.GetPropertyWithDefault("no_wall_height", 0),
                 localScale.z);
-            wall.transform.localScale = localScale;
-            GiveModel("SmallWallJump", noWallBrain);
+            this.wall.transform.localScale = localScale;
+            this.GiveModel("SmallWallJump", this.noWallBrain);
         }
         else if (config == 1)
         {
             localScale = new Vector3(
                 localScale.x,
-                m_Academy.FloatProperties.GetPropertyWithDefault("small_wall_height", 4),
+                this.m_Academy.FloatProperties.GetPropertyWithDefault("small_wall_height", 4),
                 localScale.z);
-            wall.transform.localScale = localScale;
-            GiveModel("SmallWallJump", smallWallBrain);
+            this.wall.transform.localScale = localScale;
+            this.GiveModel("SmallWallJump", this.smallWallBrain);
         }
         else
         {
-            var min = m_Academy.FloatProperties.GetPropertyWithDefault("big_wall_min_height", 8);
-            var max = m_Academy.FloatProperties.GetPropertyWithDefault("big_wall_max_height", 8);
+            var min = this.m_Academy.FloatProperties.GetPropertyWithDefault("big_wall_min_height", 8);
+            var max = this.m_Academy.FloatProperties.GetPropertyWithDefault("big_wall_max_height", 8);
             var height = min + Random.value * (max - min);
             localScale = new Vector3(
                 localScale.x,
                 height,
                 localScale.z);
-            wall.transform.localScale = localScale;
-            GiveModel("BigWallJump", bigWallBrain);
+            this.wall.transform.localScale = localScale;
+            this.GiveModel("BigWallJump", this.bigWallBrain);
         }
     }
 }

@@ -24,11 +24,11 @@ namespace MLAgents
         {
             if (fileSystem != null)
             {
-                m_FileSystem = fileSystem;
+                this.m_FileSystem = fileSystem;
             }
             else
             {
-                m_FileSystem = new FileSystem();
+                this.m_FileSystem = new FileSystem();
             }
         }
 
@@ -38,9 +38,9 @@ namespace MLAgents
         public void Initialize(
             string demonstrationName, BrainParameters brainParameters, string brainName)
         {
-            CreateDirectory();
-            CreateDemonstrationFile(demonstrationName);
-            WriteBrainParameters(brainName, brainParameters);
+            this.CreateDirectory();
+            this.CreateDemonstrationFile(demonstrationName);
+            this.WriteBrainParameters(brainName, brainParameters);
         }
 
         /// <summary>
@@ -49,9 +49,9 @@ namespace MLAgents
         /// </summary>
         void CreateDirectory()
         {
-            if (!m_FileSystem.Directory.Exists(k_DemoDirectory))
+            if (!this.m_FileSystem.Directory.Exists(k_DemoDirectory))
             {
-                m_FileSystem.Directory.CreateDirectory(k_DemoDirectory);
+                this.m_FileSystem.Directory.CreateDirectory(k_DemoDirectory);
             }
         }
 
@@ -62,19 +62,19 @@ namespace MLAgents
         {
             // Creates demonstration file.
             var literalName = demonstrationName;
-            m_FilePath = k_DemoDirectory + literalName + k_ExtensionType;
+            this.m_FilePath = k_DemoDirectory + literalName + k_ExtensionType;
             var uniqueNameCounter = 0;
-            while (m_FileSystem.File.Exists(m_FilePath))
+            while (this.m_FileSystem.File.Exists(this.m_FilePath))
             {
                 literalName = demonstrationName + "_" + uniqueNameCounter;
-                m_FilePath = k_DemoDirectory + literalName + k_ExtensionType;
+                this.m_FilePath = k_DemoDirectory + literalName + k_ExtensionType;
                 uniqueNameCounter++;
             }
 
-            m_Writer = m_FileSystem.File.Create(m_FilePath);
-            m_MetaData = new DemonstrationMetaData { demonstrationName = demonstrationName };
-            var metaProto = m_MetaData.ToProto();
-            metaProto.WriteDelimitedTo(m_Writer);
+            this.m_Writer = this.m_FileSystem.File.Create(this.m_FilePath);
+            this.m_MetaData = new DemonstrationMetaData { demonstrationName = demonstrationName };
+            var metaProto = this.m_MetaData.ToProto();
+            metaProto.WriteDelimitedTo(this.m_Writer);
         }
 
         /// <summary>
@@ -83,9 +83,9 @@ namespace MLAgents
         void WriteBrainParameters(string brainName, BrainParameters brainParameters)
         {
             // Writes BrainParameters to file.
-            m_Writer.Seek(MetaDataBytes + 1, 0);
+            this.m_Writer.Seek(MetaDataBytes + 1, 0);
             var brainProto = brainParameters.ToProto(brainName, false);
-            brainProto.WriteDelimitedTo(m_Writer);
+            brainProto.WriteDelimitedTo(this.m_Writer);
         }
 
         /// <summary>
@@ -94,16 +94,16 @@ namespace MLAgents
         public void Record(AgentInfo info)
         {
             // Increment meta-data counters.
-            m_MetaData.numberExperiences++;
-            m_CumulativeReward += info.reward;
+            this.m_MetaData.numberExperiences++;
+            this.m_CumulativeReward += info.reward;
             if (info.done)
             {
-                EndEpisode();
+                this.EndEpisode();
             }
 
             // Write AgentInfo to file.
             var agentProto = info.ToInfoActionPairProto();
-            agentProto.WriteDelimitedTo(m_Writer);
+            agentProto.WriteDelimitedTo(this.m_Writer);
         }
 
         /// <summary>
@@ -111,10 +111,10 @@ namespace MLAgents
         /// </summary>
         public void Close()
         {
-            EndEpisode();
-            m_MetaData.meanReward = m_CumulativeReward / m_MetaData.numberEpisodes;
-            WriteMetadata();
-            m_Writer.Close();
+            this.EndEpisode();
+            this.m_MetaData.meanReward = this.m_CumulativeReward / this.m_MetaData.numberEpisodes;
+            this.WriteMetadata();
+            this.m_Writer.Close();
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace MLAgents
         /// </summary>
         void EndEpisode()
         {
-            m_MetaData.numberEpisodes += 1;
+            this.m_MetaData.numberEpisodes += 1;
         }
 
         /// <summary>
@@ -130,11 +130,11 @@ namespace MLAgents
         /// </summary>
         void WriteMetadata()
         {
-            var metaProto = m_MetaData.ToProto();
+            var metaProto = this.m_MetaData.ToProto();
             var metaProtoBytes = metaProto.ToByteArray();
-            m_Writer.Write(metaProtoBytes, 0, metaProtoBytes.Length);
-            m_Writer.Seek(0, 0);
-            metaProto.WriteDelimitedTo(m_Writer);
+            this.m_Writer.Write(metaProtoBytes, 0, metaProtoBytes.Length);
+            this.m_Writer.Seek(0, 0);
+            metaProto.WriteDelimitedTo(this.m_Writer);
         }
     }
 }

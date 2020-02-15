@@ -6,7 +6,7 @@ public class BouncerTarget : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        gameObject.transform.Rotate(new Vector3(1, 0, 0), 0.5f);
+        this.gameObject.transform.Rotate(new Vector3(1, 0, 0), 0.5f);
     }
 
     void OnTriggerEnter(Collider collision)
@@ -15,13 +15,13 @@ public class BouncerTarget : MonoBehaviour
         if (agent != null)
         {
             agent.AddReward(1f);
-            Respawn();
+            this.Respawn();
         }
     }
 
     public void Respawn()
     {
-        gameObject.transform.localPosition =
+        this.gameObject.transform.localPosition =
             new Vector3(
                 (1 - 2 * Random.value) * 5f,
                 2f + Random.value * 5f,

@@ -37,32 +37,32 @@ public class WalkerAgent : Agent
 
     public override void InitializeAgent()
     {
-        m_JdController = GetComponent<JointDriveController>();
-        m_JdController.SetupBodyPart(hips);
-        m_JdController.SetupBodyPart(chest);
-        m_JdController.SetupBodyPart(spine);
-        m_JdController.SetupBodyPart(head);
-        m_JdController.SetupBodyPart(thighL);
-        m_JdController.SetupBodyPart(shinL);
-        m_JdController.SetupBodyPart(footL);
-        m_JdController.SetupBodyPart(thighR);
-        m_JdController.SetupBodyPart(shinR);
-        m_JdController.SetupBodyPart(footR);
-        m_JdController.SetupBodyPart(armL);
-        m_JdController.SetupBodyPart(forearmL);
-        m_JdController.SetupBodyPart(handL);
-        m_JdController.SetupBodyPart(armR);
-        m_JdController.SetupBodyPart(forearmR);
-        m_JdController.SetupBodyPart(handR);
+        this.m_JdController = this.GetComponent<JointDriveController>();
+        this.m_JdController.SetupBodyPart(this.hips);
+        this.m_JdController.SetupBodyPart(this.chest);
+        this.m_JdController.SetupBodyPart(this.spine);
+        this.m_JdController.SetupBodyPart(this.head);
+        this.m_JdController.SetupBodyPart(this.thighL);
+        this.m_JdController.SetupBodyPart(this.shinL);
+        this.m_JdController.SetupBodyPart(this.footL);
+        this.m_JdController.SetupBodyPart(this.thighR);
+        this.m_JdController.SetupBodyPart(this.shinR);
+        this.m_JdController.SetupBodyPart(this.footR);
+        this.m_JdController.SetupBodyPart(this.armL);
+        this.m_JdController.SetupBodyPart(this.forearmL);
+        this.m_JdController.SetupBodyPart(this.handL);
+        this.m_JdController.SetupBodyPart(this.armR);
+        this.m_JdController.SetupBodyPart(this.forearmR);
+        this.m_JdController.SetupBodyPart(this.handR);
 
-        m_HipsRb = hips.GetComponent<Rigidbody>();
-        m_ChestRb = chest.GetComponent<Rigidbody>();
-        m_SpineRb = spine.GetComponent<Rigidbody>();
+        this.m_HipsRb = this.hips.GetComponent<Rigidbody>();
+        this.m_ChestRb = this.chest.GetComponent<Rigidbody>();
+        this.m_SpineRb = this.spine.GetComponent<Rigidbody>();
 
         var academy = FindObjectOfType<WalkerAcademy>();
-        m_ResetParams = academy.FloatProperties;
+        this.m_ResetParams = academy.FloatProperties;
 
-        SetResetParameters();
+        this.SetResetParameters();
     }
 
     /// <summary>
@@ -71,19 +71,19 @@ public class WalkerAgent : Agent
     public void CollectObservationBodyPart(BodyPart bp)
     {
         var rb = bp.rb;
-        AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Is this bp touching the ground
-        AddVectorObs(rb.velocity);
-        AddVectorObs(rb.angularVelocity);
-        var localPosRelToHips = hips.InverseTransformPoint(rb.position);
-        AddVectorObs(localPosRelToHips);
+        this.AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Is this bp touching the ground
+        this.AddVectorObs(rb.velocity);
+        this.AddVectorObs(rb.angularVelocity);
+        var localPosRelToHips = this.hips.InverseTransformPoint(rb.position);
+        this.AddVectorObs(localPosRelToHips);
 
-        if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR &&
-            bp.rb.transform != footL && bp.rb.transform != footR && bp.rb.transform != head)
+        if (bp.rb.transform != this.hips && bp.rb.transform != this.handL && bp.rb.transform != this.handR &&
+            bp.rb.transform != this.footL && bp.rb.transform != this.footR && bp.rb.transform != this.head)
         {
-            AddVectorObs(bp.currentXNormalizedRot);
-            AddVectorObs(bp.currentYNormalizedRot);
-            AddVectorObs(bp.currentZNormalizedRot);
-            AddVectorObs(bp.currentStrength / m_JdController.maxJointForceLimit);
+            this.AddVectorObs(bp.currentXNormalizedRot);
+            this.AddVectorObs(bp.currentYNormalizedRot);
+            this.AddVectorObs(bp.currentZNormalizedRot);
+            this.AddVectorObs(bp.currentStrength / this.m_JdController.maxJointForceLimit);
         }
     }
 
@@ -92,75 +92,75 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void CollectObservations()
     {
-        m_JdController.GetCurrentJointForces();
+        this.m_JdController.GetCurrentJointForces();
 
-        AddVectorObs(m_DirToTarget.normalized);
-        AddVectorObs(m_JdController.bodyPartsDict[hips].rb.position);
-        AddVectorObs(hips.forward);
-        AddVectorObs(hips.up);
+        this.AddVectorObs(this.m_DirToTarget.normalized);
+        this.AddVectorObs(this.m_JdController.bodyPartsDict[this.hips].rb.position);
+        this.AddVectorObs(this.hips.forward);
+        this.AddVectorObs(this.hips.up);
 
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+        foreach (var bodyPart in this.m_JdController.bodyPartsDict.Values)
         {
-            CollectObservationBodyPart(bodyPart);
+            this.CollectObservationBodyPart(bodyPart);
         }
     }
 
     public override void AgentAction(float[] vectorAction)
     {
-        m_DirToTarget = target.position - m_JdController.bodyPartsDict[hips].rb.position;
+        this.m_DirToTarget = this.target.position - this.m_JdController.bodyPartsDict[this.hips].rb.position;
 
         // Apply action to all relevant body parts.
-        if (m_IsNewDecisionStep)
+        if (this.m_IsNewDecisionStep)
         {
-            var bpDict = m_JdController.bodyPartsDict;
+            var bpDict = this.m_JdController.bodyPartsDict;
             var i = -1;
 
-            bpDict[chest].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
-            bpDict[spine].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
+            bpDict[this.chest].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
+            bpDict[this.spine].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
 
-            bpDict[thighL].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[thighR].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[shinL].SetJointTargetRotation(vectorAction[++i], 0, 0);
-            bpDict[shinR].SetJointTargetRotation(vectorAction[++i], 0, 0);
-            bpDict[footR].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
-            bpDict[footL].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
+            bpDict[this.thighL].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[this.thighR].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[this.shinL].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[this.shinR].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[this.footR].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
+            bpDict[this.footL].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
 
 
-            bpDict[armL].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[armR].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[forearmL].SetJointTargetRotation(vectorAction[++i], 0, 0);
-            bpDict[forearmR].SetJointTargetRotation(vectorAction[++i], 0, 0);
-            bpDict[head].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[this.armL].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[this.armR].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[this.forearmL].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[this.forearmR].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[this.head].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
 
             //update joint strength settings
-            bpDict[chest].SetJointStrength(vectorAction[++i]);
-            bpDict[spine].SetJointStrength(vectorAction[++i]);
-            bpDict[head].SetJointStrength(vectorAction[++i]);
-            bpDict[thighL].SetJointStrength(vectorAction[++i]);
-            bpDict[shinL].SetJointStrength(vectorAction[++i]);
-            bpDict[footL].SetJointStrength(vectorAction[++i]);
-            bpDict[thighR].SetJointStrength(vectorAction[++i]);
-            bpDict[shinR].SetJointStrength(vectorAction[++i]);
-            bpDict[footR].SetJointStrength(vectorAction[++i]);
-            bpDict[armL].SetJointStrength(vectorAction[++i]);
-            bpDict[forearmL].SetJointStrength(vectorAction[++i]);
-            bpDict[armR].SetJointStrength(vectorAction[++i]);
-            bpDict[forearmR].SetJointStrength(vectorAction[++i]);
+            bpDict[this.chest].SetJointStrength(vectorAction[++i]);
+            bpDict[this.spine].SetJointStrength(vectorAction[++i]);
+            bpDict[this.head].SetJointStrength(vectorAction[++i]);
+            bpDict[this.thighL].SetJointStrength(vectorAction[++i]);
+            bpDict[this.shinL].SetJointStrength(vectorAction[++i]);
+            bpDict[this.footL].SetJointStrength(vectorAction[++i]);
+            bpDict[this.thighR].SetJointStrength(vectorAction[++i]);
+            bpDict[this.shinR].SetJointStrength(vectorAction[++i]);
+            bpDict[this.footR].SetJointStrength(vectorAction[++i]);
+            bpDict[this.armL].SetJointStrength(vectorAction[++i]);
+            bpDict[this.forearmL].SetJointStrength(vectorAction[++i]);
+            bpDict[this.armR].SetJointStrength(vectorAction[++i]);
+            bpDict[this.forearmR].SetJointStrength(vectorAction[++i]);
         }
 
-        IncrementDecisionTimer();
+        this.IncrementDecisionTimer();
 
         // Set reward for this step according to mixture of the following elements.
         // a. Velocity alignment with goal direction.
         // b. Rotation alignment with goal direction.
         // c. Encourage head height.
         // d. Discourage head movement.
-        AddReward(
-            +0.03f * Vector3.Dot(m_DirToTarget.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
-            + 0.01f * Vector3.Dot(m_DirToTarget.normalized, hips.forward)
-            + 0.02f * (head.position.y - hips.position.y)
-            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
-                m_JdController.bodyPartsDict[hips].rb.velocity)
+        this.AddReward(
+            +0.03f * Vector3.Dot(this.m_DirToTarget.normalized, this.m_JdController.bodyPartsDict[this.hips].rb.velocity)
+            + 0.01f * Vector3.Dot(this.m_DirToTarget.normalized, this.hips.forward)
+            + 0.02f * (this.head.position.y - this.hips.position.y)
+            - 0.01f * Vector3.Distance(this.m_JdController.bodyPartsDict[this.head].rb.velocity,
+                this.m_JdController.bodyPartsDict[this.hips].rb.velocity)
         );
     }
 
@@ -169,16 +169,16 @@ public class WalkerAgent : Agent
     /// </summary>
     public void IncrementDecisionTimer()
     {
-        if (m_CurrentDecisionStep == agentParameters.numberOfActionsBetweenDecisions ||
-            agentParameters.numberOfActionsBetweenDecisions == 1)
+        if (this.m_CurrentDecisionStep == this.agentParameters.numberOfActionsBetweenDecisions ||
+            this.agentParameters.numberOfActionsBetweenDecisions == 1)
         {
-            m_CurrentDecisionStep = 1;
-            m_IsNewDecisionStep = true;
+            this.m_CurrentDecisionStep = 1;
+            this.m_IsNewDecisionStep = true;
         }
         else
         {
-            m_CurrentDecisionStep++;
-            m_IsNewDecisionStep = false;
+            this.m_CurrentDecisionStep++;
+            this.m_IsNewDecisionStep = false;
         }
     }
 
@@ -187,30 +187,30 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void AgentReset()
     {
-        if (m_DirToTarget != Vector3.zero)
+        if (this.m_DirToTarget != Vector3.zero)
         {
-            transform.rotation = Quaternion.LookRotation(m_DirToTarget);
+            this.transform.rotation = Quaternion.LookRotation(this.m_DirToTarget);
         }
 
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+        foreach (var bodyPart in this.m_JdController.bodyPartsDict.Values)
         {
             bodyPart.Reset(bodyPart);
         }
 
-        m_IsNewDecisionStep = true;
-        m_CurrentDecisionStep = 1;
-        SetResetParameters();
+        this.m_IsNewDecisionStep = true;
+        this.m_CurrentDecisionStep = 1;
+        this.SetResetParameters();
     }
 
     public void SetTorsoMass()
     {
-        m_ChestRb.mass = m_ResetParams.GetPropertyWithDefault("chest_mass", 8);
-        m_SpineRb.mass = m_ResetParams.GetPropertyWithDefault("spine_mass", 10);
-        m_HipsRb.mass = m_ResetParams.GetPropertyWithDefault("hip_mass", 15);
+        this.m_ChestRb.mass = this.m_ResetParams.GetPropertyWithDefault("chest_mass", 8);
+        this.m_SpineRb.mass = this.m_ResetParams.GetPropertyWithDefault("spine_mass", 10);
+        this.m_HipsRb.mass = this.m_ResetParams.GetPropertyWithDefault("hip_mass", 15);
     }
 
     public void SetResetParameters()
     {
-        SetTorsoMass();
+        this.SetTorsoMass();
     }
 }

@@ -21,12 +21,12 @@ namespace MLAgents.Sensor
 
         public override float GetStartVerticalOffset()
         {
-            return startVerticalOffset;
+            return this.startVerticalOffset;
         }
 
         public override float GetEndVerticalOffset()
         {
-            return endVerticalOffset;
+            return this.endVerticalOffset;
         }
     }
 }

@@ -361,7 +361,7 @@ namespace MLAgents
         {
             if (!s_Initialized)
             {
-                Initialize();
+                this.Initialize();
                 s_Initialized = true;
             }
 

@@ -51,21 +51,21 @@ public class CrawlerAgent : Agent
 
     public override void InitializeAgent()
     {
-        m_JdController = GetComponent<JointDriveController>();
-        m_CurrentDecisionStep = 1;
-        m_DirToTarget = target.position - body.position;
+        this.m_JdController = this.GetComponent<JointDriveController>();
+        this.m_CurrentDecisionStep = 1;
+        this.m_DirToTarget = this.target.position - this.body.position;
 
 
         //Setup each body part
-        m_JdController.SetupBodyPart(body);
-        m_JdController.SetupBodyPart(leg0Upper);
-        m_JdController.SetupBodyPart(leg0Lower);
-        m_JdController.SetupBodyPart(leg1Upper);
-        m_JdController.SetupBodyPart(leg1Lower);
-        m_JdController.SetupBodyPart(leg2Upper);
-        m_JdController.SetupBodyPart(leg2Lower);
-        m_JdController.SetupBodyPart(leg3Upper);
-        m_JdController.SetupBodyPart(leg3Lower);
+        this.m_JdController.SetupBodyPart(this.body);
+        this.m_JdController.SetupBodyPart(this.leg0Upper);
+        this.m_JdController.SetupBodyPart(this.leg0Lower);
+        this.m_JdController.SetupBodyPart(this.leg1Upper);
+        this.m_JdController.SetupBodyPart(this.leg1Lower);
+        this.m_JdController.SetupBodyPart(this.leg2Upper);
+        this.m_JdController.SetupBodyPart(this.leg2Lower);
+        this.m_JdController.SetupBodyPart(this.leg3Upper);
+        this.m_JdController.SetupBodyPart(this.leg3Lower);
     }
 
     /// <summary>
@@ -73,16 +73,16 @@ public class CrawlerAgent : Agent
     /// </summary>
     public void IncrementDecisionTimer()
     {
-        if (m_CurrentDecisionStep == agentParameters.numberOfActionsBetweenDecisions
-            || agentParameters.numberOfActionsBetweenDecisions == 1)
+        if (this.m_CurrentDecisionStep == this.agentParameters.numberOfActionsBetweenDecisions
+            || this.agentParameters.numberOfActionsBetweenDecisions == 1)
         {
-            m_CurrentDecisionStep = 1;
-            m_IsNewDecisionStep = true;
+            this.m_CurrentDecisionStep = 1;
+            this.m_IsNewDecisionStep = true;
         }
         else
         {
-            m_CurrentDecisionStep++;
-            m_IsNewDecisionStep = false;
+            this.m_CurrentDecisionStep++;
+            this.m_IsNewDecisionStep = false;
         }
     }
 
@@ -92,52 +92,52 @@ public class CrawlerAgent : Agent
     public void CollectObservationBodyPart(BodyPart bp)
     {
         var rb = bp.rb;
-        AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
+        this.AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
 
-        var velocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.velocity);
-        AddVectorObs(velocityRelativeToLookRotationToTarget);
+        var velocityRelativeToLookRotationToTarget = this.m_TargetDirMatrix.inverse.MultiplyVector(rb.velocity);
+        this.AddVectorObs(velocityRelativeToLookRotationToTarget);
 
-        var angularVelocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.angularVelocity);
-        AddVectorObs(angularVelocityRelativeToLookRotationToTarget);
+        var angularVelocityRelativeToLookRotationToTarget = this.m_TargetDirMatrix.inverse.MultiplyVector(rb.angularVelocity);
+        this.AddVectorObs(angularVelocityRelativeToLookRotationToTarget);
 
-        if (bp.rb.transform != body)
+        if (bp.rb.transform != this.body)
         {
-            var localPosRelToBody = body.InverseTransformPoint(rb.position);
-            AddVectorObs(localPosRelToBody);
-            AddVectorObs(bp.currentXNormalizedRot); // Current x rot
-            AddVectorObs(bp.currentYNormalizedRot); // Current y rot
-            AddVectorObs(bp.currentZNormalizedRot); // Current z rot
-            AddVectorObs(bp.currentStrength / m_JdController.maxJointForceLimit);
+            var localPosRelToBody = this.body.InverseTransformPoint(rb.position);
+            this.AddVectorObs(localPosRelToBody);
+            this.AddVectorObs(bp.currentXNormalizedRot); // Current x rot
+            this.AddVectorObs(bp.currentYNormalizedRot); // Current y rot
+            this.AddVectorObs(bp.currentZNormalizedRot); // Current z rot
+            this.AddVectorObs(bp.currentStrength / this.m_JdController.maxJointForceLimit);
         }
     }
 
     public override void CollectObservations()
     {
-        m_JdController.GetCurrentJointForces();
+        this.m_JdController.GetCurrentJointForces();
 
         // Update pos to target
-        m_DirToTarget = target.position - body.position;
-        m_LookRotation = Quaternion.LookRotation(m_DirToTarget);
-        m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
+        this.m_DirToTarget = this.target.position - this.body.position;
+        this.m_LookRotation = Quaternion.LookRotation(this.m_DirToTarget);
+        this.m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, this.m_LookRotation, Vector3.one);
 
         RaycastHit hit;
-        if (Physics.Raycast(body.position, Vector3.down, out hit, 10.0f))
+        if (Physics.Raycast(this.body.position, Vector3.down, out hit, 10.0f))
         {
-            AddVectorObs(hit.distance);
+            this.AddVectorObs(hit.distance);
         }
         else
-            AddVectorObs(10.0f);
+            this.AddVectorObs(10.0f);
 
         // Forward & up to help with orientation
-        var bodyForwardRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(body.forward);
-        AddVectorObs(bodyForwardRelativeToLookRotationToTarget);
+        var bodyForwardRelativeToLookRotationToTarget = this.m_TargetDirMatrix.inverse.MultiplyVector(this.body.forward);
+        this.AddVectorObs(bodyForwardRelativeToLookRotationToTarget);
 
-        var bodyUpRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(body.up);
-        AddVectorObs(bodyUpRelativeToLookRotationToTarget);
+        var bodyUpRelativeToLookRotationToTarget = this.m_TargetDirMatrix.inverse.MultiplyVector(this.body.up);
+        this.AddVectorObs(bodyUpRelativeToLookRotationToTarget);
 
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+        foreach (var bodyPart in this.m_JdController.bodyPartsDict.Values)
         {
-            CollectObservationBodyPart(bodyPart);
+            this.CollectObservationBodyPart(bodyPart);
         }
     }
 
@@ -146,10 +146,10 @@ public class CrawlerAgent : Agent
     /// </summary>
     public void TouchedTarget()
     {
-        AddReward(1f);
-        if (respawnTargetWhenTouched)
+        this.AddReward(1f);
+        if (this.respawnTargetWhenTouched)
         {
-            GetRandomTargetPos();
+            this.GetRandomTargetPos();
         }
     }
 
@@ -158,87 +158,87 @@ public class CrawlerAgent : Agent
     /// </summary>
     public void GetRandomTargetPos()
     {
-        var newTargetPos = Random.insideUnitSphere * targetSpawnRadius;
+        var newTargetPos = Random.insideUnitSphere * this.targetSpawnRadius;
         newTargetPos.y = 5;
-        target.position = newTargetPos + ground.position;
+        this.target.position = newTargetPos + this.ground.position;
     }
 
     public override void AgentAction(float[] vectorAction)
     {
-        if (detectTargets)
+        if (this.detectTargets)
         {
-            foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+            foreach (var bodyPart in this.m_JdController.bodyPartsDict.Values)
             {
-                if (bodyPart.targetContact && !IsDone() && bodyPart.targetContact.touchingTarget)
+                if (bodyPart.targetContact && !this.IsDone() && bodyPart.targetContact.touchingTarget)
                 {
-                    TouchedTarget();
+                    this.TouchedTarget();
                 }
             }
         }
 
         // If enabled the feet will light up green when the foot is grounded.
         // This is just a visualization and isn't necessary for function
-        if (useFootGroundedVisualization)
+        if (this.useFootGroundedVisualization)
         {
-            foot0.material = m_JdController.bodyPartsDict[leg0Lower].groundContact.touchingGround
-                ? groundedMaterial
-                : unGroundedMaterial;
-            foot1.material = m_JdController.bodyPartsDict[leg1Lower].groundContact.touchingGround
-                ? groundedMaterial
-                : unGroundedMaterial;
-            foot2.material = m_JdController.bodyPartsDict[leg2Lower].groundContact.touchingGround
-                ? groundedMaterial
-                : unGroundedMaterial;
-            foot3.material = m_JdController.bodyPartsDict[leg3Lower].groundContact.touchingGround
-                ? groundedMaterial
-                : unGroundedMaterial;
+            this.foot0.material = this.m_JdController.bodyPartsDict[this.leg0Lower].groundContact.touchingGround
+                ? this.groundedMaterial
+                : this.unGroundedMaterial;
+            this.foot1.material = this.m_JdController.bodyPartsDict[this.leg1Lower].groundContact.touchingGround
+                ? this.groundedMaterial
+                : this.unGroundedMaterial;
+            this.foot2.material = this.m_JdController.bodyPartsDict[this.leg2Lower].groundContact.touchingGround
+                ? this.groundedMaterial
+                : this.unGroundedMaterial;
+            this.foot3.material = this.m_JdController.bodyPartsDict[this.leg3Lower].groundContact.touchingGround
+                ? this.groundedMaterial
+                : this.unGroundedMaterial;
         }
 
         // Joint update logic only needs to happen when a new decision is made
-        if (m_IsNewDecisionStep)
+        if (this.m_IsNewDecisionStep)
         {
             // The dictionary with all the body parts in it are in the jdController
-            var bpDict = m_JdController.bodyPartsDict;
+            var bpDict = this.m_JdController.bodyPartsDict;
 
             var i = -1;
             // Pick a new target joint rotation
-            bpDict[leg0Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[leg1Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[leg2Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[leg3Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[leg0Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
-            bpDict[leg1Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
-            bpDict[leg2Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
-            bpDict[leg3Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[this.leg0Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[this.leg1Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[this.leg2Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[this.leg3Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[this.leg0Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[this.leg1Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[this.leg2Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[this.leg3Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
 
             // Update joint strength
-            bpDict[leg0Upper].SetJointStrength(vectorAction[++i]);
-            bpDict[leg1Upper].SetJointStrength(vectorAction[++i]);
-            bpDict[leg2Upper].SetJointStrength(vectorAction[++i]);
-            bpDict[leg3Upper].SetJointStrength(vectorAction[++i]);
-            bpDict[leg0Lower].SetJointStrength(vectorAction[++i]);
-            bpDict[leg1Lower].SetJointStrength(vectorAction[++i]);
-            bpDict[leg2Lower].SetJointStrength(vectorAction[++i]);
-            bpDict[leg3Lower].SetJointStrength(vectorAction[++i]);
+            bpDict[this.leg0Upper].SetJointStrength(vectorAction[++i]);
+            bpDict[this.leg1Upper].SetJointStrength(vectorAction[++i]);
+            bpDict[this.leg2Upper].SetJointStrength(vectorAction[++i]);
+            bpDict[this.leg3Upper].SetJointStrength(vectorAction[++i]);
+            bpDict[this.leg0Lower].SetJointStrength(vectorAction[++i]);
+            bpDict[this.leg1Lower].SetJointStrength(vectorAction[++i]);
+            bpDict[this.leg2Lower].SetJointStrength(vectorAction[++i]);
+            bpDict[this.leg3Lower].SetJointStrength(vectorAction[++i]);
         }
 
         // Set reward for this step according to mixture of the following elements.
-        if (rewardMovingTowardsTarget)
+        if (this.rewardMovingTowardsTarget)
         {
-            RewardFunctionMovingTowards();
+            this.RewardFunctionMovingTowards();
         }
 
-        if (rewardFacingTarget)
+        if (this.rewardFacingTarget)
         {
-            RewardFunctionFacingTarget();
+            this.RewardFunctionFacingTarget();
         }
 
-        if (rewardUseTimePenalty)
+        if (this.rewardUseTimePenalty)
         {
-            RewardFunctionTimePenalty();
+            this.RewardFunctionTimePenalty();
         }
 
-        IncrementDecisionTimer();
+        this.IncrementDecisionTimer();
     }
 
     /// <summary>
@@ -246,8 +246,8 @@ public class CrawlerAgent : Agent
     /// </summary>
     void RewardFunctionMovingTowards()
     {
-        m_MovingTowardsDot = Vector3.Dot(m_JdController.bodyPartsDict[body].rb.velocity, m_DirToTarget.normalized);
-        AddReward(0.03f * m_MovingTowardsDot);
+        this.m_MovingTowardsDot = Vector3.Dot(this.m_JdController.bodyPartsDict[this.body].rb.velocity, this.m_DirToTarget.normalized);
+        this.AddReward(0.03f * this.m_MovingTowardsDot);
     }
 
     /// <summary>
@@ -255,8 +255,8 @@ public class CrawlerAgent : Agent
     /// </summary>
     void RewardFunctionFacingTarget()
     {
-        m_FacingDot = Vector3.Dot(m_DirToTarget.normalized, body.forward);
-        AddReward(0.01f * m_FacingDot);
+        this.m_FacingDot = Vector3.Dot(this.m_DirToTarget.normalized, this.body.forward);
+        this.AddReward(0.01f * this.m_FacingDot);
     }
 
     /// <summary>
@@ -264,7 +264,7 @@ public class CrawlerAgent : Agent
     /// </summary>
     void RewardFunctionTimePenalty()
     {
-        AddReward(-0.001f);
+        this.AddReward(-0.001f);
     }
 
     /// <summary>
@@ -272,21 +272,21 @@ public class CrawlerAgent : Agent
     /// </summary>
     public override void AgentReset()
     {
-        if (m_DirToTarget != Vector3.zero)
+        if (this.m_DirToTarget != Vector3.zero)
         {
-            transform.rotation = Quaternion.LookRotation(m_DirToTarget);
+            this.transform.rotation = Quaternion.LookRotation(this.m_DirToTarget);
         }
-        transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
+        this.transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
 
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+        foreach (var bodyPart in this.m_JdController.bodyPartsDict.Values)
         {
             bodyPart.Reset(bodyPart);
         }
-        if (!targetIsStatic)
+        if (!this.targetIsStatic)
         {
-            GetRandomTargetPos();
+            this.GetRandomTargetPos();
         }
-        m_IsNewDecisionStep = true;
-        m_CurrentDecisionStep = 1;
+        this.m_IsNewDecisionStep = true;
+        this.m_CurrentDecisionStep = 1;
     }
 }

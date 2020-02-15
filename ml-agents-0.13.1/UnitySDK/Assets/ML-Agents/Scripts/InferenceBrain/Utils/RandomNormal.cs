@@ -16,9 +16,9 @@ namespace MLAgents.InferenceBrain.Utils
 
         public RandomNormal(int seed, float mean = 0.0f, float stddev = 1.0f)
         {
-            m_Mean = mean;
-            m_Stddev = stddev;
-            m_Random = new Random(seed);
+            this.m_Mean = mean;
+            this.m_Stddev = stddev;
+            this.m_Random = new Random(seed);
         }
 
         // Each iteration produces two numbers. Hold one here for next call
@@ -31,26 +31,26 @@ namespace MLAgents.InferenceBrain.Utils
         /// <returns>Next random double number</returns>
         public double NextDouble()
         {
-            if (m_HasSpare)
+            if (this.m_HasSpare)
             {
-                m_HasSpare = false;
-                return m_SpareUnscaled * m_Stddev + m_Mean;
+                this.m_HasSpare = false;
+                return this.m_SpareUnscaled * this.m_Stddev + this.m_Mean;
             }
 
             double u, v, s;
             do
             {
-                u = m_Random.NextDouble() * 2.0 - 1.0;
-                v = m_Random.NextDouble() * 2.0 - 1.0;
+                u = this.m_Random.NextDouble() * 2.0 - 1.0;
+                v = this.m_Random.NextDouble() * 2.0 - 1.0;
                 s = u * u + v * v;
             }
             while (s >= 1.0 || Math.Abs(s) < double.Epsilon);
 
             s = Math.Sqrt(-2.0 * Math.Log(s) / s);
-            m_SpareUnscaled = u * s;
-            m_HasSpare = true;
+            this.m_SpareUnscaled = u * s;
+            this.m_HasSpare = true;
 
-            return v * s * m_Stddev + m_Mean;
+            return v * s * this.m_Stddev + this.m_Mean;
         }
     }
 }

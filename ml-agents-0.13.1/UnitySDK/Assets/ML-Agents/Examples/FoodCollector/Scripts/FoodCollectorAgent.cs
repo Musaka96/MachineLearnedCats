@@ -31,23 +31,23 @@ public class FoodCollectorAgent : Agent
     public override void InitializeAgent()
     {
         base.InitializeAgent();
-        m_AgentRb = GetComponent<Rigidbody>();
+        this.m_AgentRb = this.GetComponent<Rigidbody>();
         Monitor.verticalOffset = 1f;
-        m_MyArea = area.GetComponent<FoodCollectorArea>();
-        m_MyAcademy = FindObjectOfType<FoodCollectorAcademy>();
+        this.m_MyArea = this.area.GetComponent<FoodCollectorArea>();
+        this.m_MyAcademy = FindObjectOfType<FoodCollectorAcademy>();
 
-        SetResetParameters();
+        this.SetResetParameters();
     }
 
     public override void CollectObservations()
     {
-        if (useVectorObs)
+        if (this.useVectorObs)
         {
-            var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
-            AddVectorObs(localVelocity.x);
-            AddVectorObs(localVelocity.z);
-            AddVectorObs(System.Convert.ToInt32(m_Frozen));
-            AddVectorObs(System.Convert.ToInt32(m_Shoot));
+            var localVelocity = this.transform.InverseTransformDirection(this.m_AgentRb.velocity);
+            this.AddVectorObs(localVelocity.x);
+            this.AddVectorObs(localVelocity.z);
+            this.AddVectorObs(System.Convert.ToInt32(this.m_Frozen));
+            this.AddVectorObs(System.Convert.ToInt32(this.m_Shoot));
         }
     }
 
@@ -61,28 +61,28 @@ public class FoodCollectorAgent : Agent
 
     public void MoveAgent(float[] act)
     {
-        m_Shoot = false;
+        this.m_Shoot = false;
 
-        if (Time.time > m_FrozenTime + 4f && m_Frozen)
+        if (Time.time > this.m_FrozenTime + 4f && this.m_Frozen)
         {
-            Unfreeze();
+            this.Unfreeze();
         }
-        if (Time.time > m_EffectTime + 0.5f)
+        if (Time.time > this.m_EffectTime + 0.5f)
         {
-            if (m_Poisoned)
+            if (this.m_Poisoned)
             {
-                Unpoison();
+                this.Unpoison();
             }
-            if (m_Satiated)
+            if (this.m_Satiated)
             {
-                Unsatiate();
+                this.Unsatiate();
             }
         }
 
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
 
-        if (!m_Frozen)
+        if (!this.m_Frozen)
         {
             var shootCommand = false;
             var forwardAxis = (int)act[0];
@@ -93,30 +93,30 @@ public class FoodCollectorAgent : Agent
             switch (forwardAxis)
             {
                 case 1:
-                    dirToGo = transform.forward;
+                    dirToGo = this.transform.forward;
                     break;
                 case 2:
-                    dirToGo = -transform.forward;
+                    dirToGo = -this.transform.forward;
                     break;
             }
 
             switch (rightAxis)
             {
                 case 1:
-                    dirToGo = transform.right;
+                    dirToGo = this.transform.right;
                     break;
                 case 2:
-                    dirToGo = -transform.right;
+                    dirToGo = -this.transform.right;
                     break;
             }
 
             switch (rotateAxis)
             {
                 case 1:
-                    rotateDir = -transform.up;
+                    rotateDir = -this.transform.up;
                     break;
                 case 2:
-                    rotateDir = transform.up;
+                    rotateDir = this.transform.up;
                     break;
             }
             switch (shootAxis)
@@ -127,27 +127,27 @@ public class FoodCollectorAgent : Agent
             }
             if (shootCommand)
             {
-                m_Shoot = true;
+                this.m_Shoot = true;
                 dirToGo *= 0.5f;
-                m_AgentRb.velocity *= 0.75f;
+                this.m_AgentRb.velocity *= 0.75f;
             }
-            m_AgentRb.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
-            transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
+            this.m_AgentRb.AddForce(dirToGo * this.moveSpeed, ForceMode.VelocityChange);
+            this.transform.Rotate(rotateDir, Time.fixedDeltaTime * this.turnSpeed);
         }
 
-        if (m_AgentRb.velocity.sqrMagnitude > 25f) // slow it down
+        if (this.m_AgentRb.velocity.sqrMagnitude > 25f) // slow it down
         {
-            m_AgentRb.velocity *= 0.95f;
+            this.m_AgentRb.velocity *= 0.95f;
         }
 
-        if (m_Shoot)
+        if (this.m_Shoot)
         {
-            var myTransform = transform;
-            myLaser.transform.localScale = new Vector3(1f, 1f, m_LaserLength);
+            var myTransform = this.transform;
+            this.myLaser.transform.localScale = new Vector3(1f, 1f, this.m_LaserLength);
             var rayDir = 25.0f * myTransform.forward;
             Debug.DrawRay(myTransform.position, rayDir, Color.red, 0f, true);
             RaycastHit hit;
-            if (Physics.SphereCast(transform.position, 2f, rayDir, out hit, 25f))
+            if (Physics.SphereCast(this.transform.position, 2f, rayDir, out hit, 25f))
             {
                 if (hit.collider.gameObject.CompareTag("agent"))
                 {
@@ -157,54 +157,54 @@ public class FoodCollectorAgent : Agent
         }
         else
         {
-            myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
+            this.myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
         }
     }
 
     void Freeze()
     {
-        gameObject.tag = "frozenAgent";
-        m_Frozen = true;
-        m_FrozenTime = Time.time;
-        gameObject.GetComponentInChildren<Renderer>().material = frozenMaterial;
+        this.gameObject.tag = "frozenAgent";
+        this.m_Frozen = true;
+        this.m_FrozenTime = Time.time;
+        this.gameObject.GetComponentInChildren<Renderer>().material = this.frozenMaterial;
     }
 
     void Unfreeze()
     {
-        m_Frozen = false;
-        gameObject.tag = "agent";
-        gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
+        this.m_Frozen = false;
+        this.gameObject.tag = "agent";
+        this.gameObject.GetComponentInChildren<Renderer>().material = this.normalMaterial;
     }
 
     void Poison()
     {
-        m_Poisoned = true;
-        m_EffectTime = Time.time;
-        gameObject.GetComponentInChildren<Renderer>().material = badMaterial;
+        this.m_Poisoned = true;
+        this.m_EffectTime = Time.time;
+        this.gameObject.GetComponentInChildren<Renderer>().material = this.badMaterial;
     }
 
     void Unpoison()
     {
-        m_Poisoned = false;
-        gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
+        this.m_Poisoned = false;
+        this.gameObject.GetComponentInChildren<Renderer>().material = this.normalMaterial;
     }
 
     void Satiate()
     {
-        m_Satiated = true;
-        m_EffectTime = Time.time;
-        gameObject.GetComponentInChildren<Renderer>().material = goodMaterial;
+        this.m_Satiated = true;
+        this.m_EffectTime = Time.time;
+        this.gameObject.GetComponentInChildren<Renderer>().material = this.goodMaterial;
     }
 
     void Unsatiate()
     {
-        m_Satiated = false;
-        gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
+        this.m_Satiated = false;
+        this.gameObject.GetComponentInChildren<Renderer>().material = this.normalMaterial;
     }
 
     public override void AgentAction(float[] vectorAction)
     {
-        MoveAgent(vectorAction);
+        this.MoveAgent(vectorAction);
     }
 
     public override float[] Heuristic()
@@ -232,41 +232,41 @@ public class FoodCollectorAgent : Agent
 
     public override void AgentReset()
     {
-        Unfreeze();
-        Unpoison();
-        Unsatiate();
-        m_Shoot = false;
-        m_AgentRb.velocity = Vector3.zero;
-        myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
-        transform.position = new Vector3(Random.Range(-m_MyArea.range, m_MyArea.range),
-            2f, Random.Range(-m_MyArea.range, m_MyArea.range))
-            + area.transform.position;
-        transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
+        this.Unfreeze();
+        this.Unpoison();
+        this.Unsatiate();
+        this.m_Shoot = false;
+        this.m_AgentRb.velocity = Vector3.zero;
+        this.myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
+        this.transform.position = new Vector3(Random.Range(-this.m_MyArea.range, this.m_MyArea.range),
+            2f, Random.Range(-this.m_MyArea.range, this.m_MyArea.range))
+            + this.area.transform.position;
+        this.transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
 
-        SetResetParameters();
+        this.SetResetParameters();
     }
 
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("food"))
         {
-            Satiate();
+            this.Satiate();
             collision.gameObject.GetComponent<FoodLogic>().OnEaten();
-            AddReward(1f);
-            if (contribute)
+            this.AddReward(1f);
+            if (this.contribute)
             {
-                m_MyAcademy.totalScore += 1;
+                this.m_MyAcademy.totalScore += 1;
             }
         }
         if (collision.gameObject.CompareTag("badFood"))
         {
-            Poison();
+            this.Poison();
             collision.gameObject.GetComponent<FoodLogic>().OnEaten();
 
-            AddReward(-1f);
-            if (contribute)
+            this.AddReward(-1f);
+            if (this.contribute)
             {
-                m_MyAcademy.totalScore -= 1;
+                this.m_MyAcademy.totalScore -= 1;
             }
         }
     }
@@ -277,18 +277,18 @@ public class FoodCollectorAgent : Agent
 
     public void SetLaserLengths()
     {
-        m_LaserLength = m_MyAcademy.FloatProperties.GetPropertyWithDefault("laser_length", 1.0f);
+        this.m_LaserLength = this.m_MyAcademy.FloatProperties.GetPropertyWithDefault("laser_length", 1.0f);
     }
 
     public void SetAgentScale()
     {
-        float agentScale = m_MyAcademy.FloatProperties.GetPropertyWithDefault("agent_scale", 1.0f);
-        gameObject.transform.localScale = new Vector3(agentScale, agentScale, agentScale);
+        float agentScale = this.m_MyAcademy.FloatProperties.GetPropertyWithDefault("agent_scale", 1.0f);
+        this.gameObject.transform.localScale = new Vector3(agentScale, agentScale, agentScale);
     }
 
     public void SetResetParameters()
     {
-        SetLaserLengths();
-        SetAgentScale();
+        this.SetLaserLengths();
+        this.SetAgentScale();
     }
 }

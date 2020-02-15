@@ -11,15 +11,15 @@ namespace MLAgents.Sensor
 
         public override ISensor CreateSensor()
         {
-            return new RenderTextureSensor(renderTexture, grayscale, sensorName);
+            return new RenderTextureSensor(this.renderTexture, this.grayscale, this.sensorName);
         }
 
         public override int[] GetObservationShape()
         {
-            var width = renderTexture != null ? renderTexture.width : 0;
-            var height = renderTexture != null ? renderTexture.height : 0;
+            var width = this.renderTexture != null ? this.renderTexture.width : 0;
+            var height = this.renderTexture != null ? this.renderTexture.height : 0;
 
-            return new[] { height, width, grayscale ? 1 : 3 };
+            return new[] { height, width, this.grayscale ? 1 : 3 };
         }
     }
 }

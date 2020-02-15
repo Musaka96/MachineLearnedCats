@@ -20,25 +20,25 @@ public class HallwayAgent : Agent
     public override void InitializeAgent()
     {
         base.InitializeAgent();
-        m_Academy = FindObjectOfType<HallwayAcademy>();
-        m_AgentRb = GetComponent<Rigidbody>();
-        m_GroundRenderer = ground.GetComponent<Renderer>();
-        m_GroundMaterial = m_GroundRenderer.material;
+        this.m_Academy = FindObjectOfType<HallwayAcademy>();
+        this.m_AgentRb = this.GetComponent<Rigidbody>();
+        this.m_GroundRenderer = this.ground.GetComponent<Renderer>();
+        this.m_GroundMaterial = this.m_GroundRenderer.material;
     }
 
     public override void CollectObservations()
     {
-        if (useVectorObs)
+        if (this.useVectorObs)
         {
-            AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
+            this.AddVectorObs(this.GetStepCount() / (float)this.agentParameters.maxStep);
         }
     }
 
     IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
     {
-        m_GroundRenderer.material = mat;
+        this.m_GroundRenderer.material = mat;
         yield return new WaitForSeconds(time);
-        m_GroundRenderer.material = m_GroundMaterial;
+        this.m_GroundRenderer.material = this.m_GroundMaterial;
     }
 
     public void MoveAgent(float[] act)
@@ -50,44 +50,44 @@ public class HallwayAgent : Agent
         switch (action)
         {
             case 1:
-                dirToGo = transform.forward * 1f;
+                dirToGo = this.transform.forward * 1f;
                 break;
             case 2:
-                dirToGo = transform.forward * -1f;
+                dirToGo = this.transform.forward * -1f;
                 break;
             case 3:
-                rotateDir = transform.up * 1f;
+                rotateDir = this.transform.up * 1f;
                 break;
             case 4:
-                rotateDir = transform.up * -1f;
+                rotateDir = this.transform.up * -1f;
                 break;
         }
-        transform.Rotate(rotateDir, Time.deltaTime * 150f);
-        m_AgentRb.AddForce(dirToGo * m_Academy.agentRunSpeed, ForceMode.VelocityChange);
+        this.transform.Rotate(rotateDir, Time.deltaTime * 150f);
+        this.m_AgentRb.AddForce(dirToGo * this.m_Academy.agentRunSpeed, ForceMode.VelocityChange);
     }
 
     public override void AgentAction(float[] vectorAction)
     {
-        AddReward(-1f / agentParameters.maxStep);
-        MoveAgent(vectorAction);
+        this.AddReward(-1f / this.agentParameters.maxStep);
+        this.MoveAgent(vectorAction);
     }
 
     void OnCollisionEnter(Collision col)
     {
         if (col.gameObject.CompareTag("symbol_O_Goal") || col.gameObject.CompareTag("symbol_X_Goal"))
         {
-            if ((m_Selection == 0 && col.gameObject.CompareTag("symbol_O_Goal")) ||
-                (m_Selection == 1 && col.gameObject.CompareTag("symbol_X_Goal")))
+            if ((this.m_Selection == 0 && col.gameObject.CompareTag("symbol_O_Goal")) ||
+                (this.m_Selection == 1 && col.gameObject.CompareTag("symbol_X_Goal")))
             {
-                SetReward(1f);
-                StartCoroutine(GoalScoredSwapGroundMaterial(m_Academy.goalScoredMaterial, 0.5f));
+                this.SetReward(1f);
+                this.StartCoroutine(this.GoalScoredSwapGroundMaterial(this.m_Academy.goalScoredMaterial, 0.5f));
             }
             else
             {
-                SetReward(-0.1f);
-                StartCoroutine(GoalScoredSwapGroundMaterial(m_Academy.failMaterial, 0.5f));
+                this.SetReward(-0.1f);
+                this.StartCoroutine(this.GoalScoredSwapGroundMaterial(this.m_Academy.failMaterial, 0.5f));
             }
-            Done();
+            this.Done();
         }
     }
 
@@ -116,42 +116,42 @@ public class HallwayAgent : Agent
     {
         var agentOffset = -15f;
         var blockOffset = 0f;
-        m_Selection = Random.Range(0, 2);
-        if (m_Selection == 0)
+        this.m_Selection = Random.Range(0, 2);
+        if (this.m_Selection == 0)
         {
-            symbolO.transform.position =
+            this.symbolO.transform.position =
                 new Vector3(0f + Random.Range(-3f, 3f), 2f, blockOffset + Random.Range(-5f, 5f))
-                + ground.transform.position;
-            symbolX.transform.position =
+                + this.ground.transform.position;
+            this.symbolX.transform.position =
                 new Vector3(0f, -1000f, blockOffset + Random.Range(-5f, 5f))
-                + ground.transform.position;
+                + this.ground.transform.position;
         }
         else
         {
-            symbolO.transform.position =
+            this.symbolO.transform.position =
                 new Vector3(0f, -1000f, blockOffset + Random.Range(-5f, 5f))
-                + ground.transform.position;
-            symbolX.transform.position =
+                + this.ground.transform.position;
+            this.symbolX.transform.position =
                 new Vector3(0f, 2f, blockOffset + Random.Range(-5f, 5f))
-                + ground.transform.position;
+                + this.ground.transform.position;
         }
 
-        transform.position = new Vector3(0f + Random.Range(-3f, 3f),
+        this.transform.position = new Vector3(0f + Random.Range(-3f, 3f),
             1f, agentOffset + Random.Range(-5f, 5f))
-            + ground.transform.position;
-        transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
-        m_AgentRb.velocity *= 0f;
+            + this.ground.transform.position;
+        this.transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+        this.m_AgentRb.velocity *= 0f;
 
         var goalPos = Random.Range(0, 2);
         if (goalPos == 0)
         {
-            symbolOGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
-            symbolXGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + area.transform.position;
+            this.symbolOGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + this.area.transform.position;
+            this.symbolXGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + this.area.transform.position;
         }
         else
         {
-            symbolXGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
-            symbolOGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + area.transform.position;
+            this.symbolXGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + this.area.transform.position;
+            this.symbolOGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + this.area.transform.position;
         }
     }
 }

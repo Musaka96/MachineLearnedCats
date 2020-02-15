@@ -35,22 +35,22 @@ namespace MLAgents
             var aca = Object.FindObjectOfType<Academy>();
             aca.LazyInitialization();
             var modelRunner = aca.GetOrCreateModelRunner(model, brainParameters, inferenceDevice);
-            m_ModelRunner = modelRunner;
+            this.m_ModelRunner = modelRunner;
         }
 
         /// <inheritdoc />
         public void RequestDecision(Agent agent)
         {
 #if DEBUG
-            ValidateAgentSensorShapes(agent);
+            this.ValidateAgentSensorShapes(agent);
 #endif
-            m_ModelRunner?.PutObservations(agent);
+            this.m_ModelRunner?.PutObservations(agent);
         }
 
         /// <inheritdoc />
         public void DecideAction()
         {
-            m_ModelRunner?.DecideBatch();
+            this.m_ModelRunner?.DecideBatch();
         }
 
         /// <summary>
@@ -60,23 +60,23 @@ namespace MLAgents
         /// <param name="agent">The Agent to check</param>
         void ValidateAgentSensorShapes(Agent agent)
         {
-            if (m_SensorShapes == null)
+            if (this.m_SensorShapes == null)
             {
-                m_SensorShapes = new List<int[]>(agent.sensors.Count);
+                this.m_SensorShapes = new List<int[]>(agent.sensors.Count);
                 // First agent, save the sensor sizes
                 foreach (var sensor in agent.sensors)
                 {
-                    m_SensorShapes.Add(sensor.GetFloatObservationShape());
+                    this.m_SensorShapes.Add(sensor.GetFloatObservationShape());
                 }
             }
             else
             {
                 // Check for compatibility with the other Agents' Sensors
                 // TODO make sure this only checks once per agent
-                Debug.Assert(m_SensorShapes.Count == agent.sensors.Count, $"Number of Sensors must match. {m_SensorShapes.Count} != {agent.sensors.Count}");
-                for (var i = 0; i < m_SensorShapes.Count; i++)
+                Debug.Assert(this.m_SensorShapes.Count == agent.sensors.Count, $"Number of Sensors must match. {this.m_SensorShapes.Count} != {agent.sensors.Count}");
+                for (var i = 0; i < this.m_SensorShapes.Count; i++)
                 {
-                    var cachedShape = m_SensorShapes[i];
+                    var cachedShape = this.m_SensorShapes[i];
                     var sensorShape = agent.sensors[i].GetFloatObservationShape();
                     Debug.Assert(cachedShape.Length == sensorShape.Length, "Sensor dimensions must match.");
                     for (var j = 0; j < cachedShape.Length; j++)

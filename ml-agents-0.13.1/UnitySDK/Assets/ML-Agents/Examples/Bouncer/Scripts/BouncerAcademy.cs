@@ -7,7 +7,7 @@ public class BouncerAcademy : Academy
 
     public override void InitializeAcademy()
     {
-        Physics.gravity = new Vector3(0, -9.8f * gravityMultiplier, 0);
+        Physics.gravity = new Vector3(0, -9.8f * this.gravityMultiplier, 0);
     }
 
     public override void AcademyReset()

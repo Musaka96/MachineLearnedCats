@@ -39,42 +39,42 @@ namespace MLAgents.Sensor
         public StackingSensor(ISensor wrapped, int numStackedObservations)
         {
             // TODO ensure numStackedObservations > 1
-            m_WrappedSensor = wrapped;
-            m_NumStackedObservations = numStackedObservations;
+            this.m_WrappedSensor = wrapped;
+            this.m_NumStackedObservations = numStackedObservations;
 
-            m_Name = $"StackingSensor_size{numStackedObservations}_{wrapped.GetName()}";
+            this.m_Name = $"StackingSensor_size{numStackedObservations}_{wrapped.GetName()}";
 
             var shape = wrapped.GetFloatObservationShape();
-            m_Shape = new int[shape.Length];
+            this.m_Shape = new int[shape.Length];
 
-            m_UnstackedObservationSize = wrapped.ObservationSize();
+            this.m_UnstackedObservationSize = wrapped.ObservationSize();
             for (int d = 0; d < shape.Length; d++)
             {
-                m_Shape[d] = shape[d];
+                this.m_Shape[d] = shape[d];
             }
 
             // TODO support arbitrary stacking dimension
-            m_Shape[0] *= numStackedObservations;
-            m_StackedObservations = new float[numStackedObservations][];
+            this.m_Shape[0] *= numStackedObservations;
+            this.m_StackedObservations = new float[numStackedObservations][];
             for (var i = 0; i < numStackedObservations; i++)
             {
-                m_StackedObservations[i] = new float[m_UnstackedObservationSize];
+                this.m_StackedObservations[i] = new float[this.m_UnstackedObservationSize];
             }
         }
 
         public int Write(WriteAdapter adapter)
         {
             // First, call the wrapped sensor's write method. Make sure to use our own adapater, not the passed one.
-            m_LocalAdapter.SetTarget(m_StackedObservations[m_CurrentIndex], 0);
-            m_WrappedSensor.Write(m_LocalAdapter);
+            this.m_LocalAdapter.SetTarget(this.m_StackedObservations[this.m_CurrentIndex], 0);
+            this.m_WrappedSensor.Write(this.m_LocalAdapter);
 
             // Now write the saved observations (oldest first)
             var numWritten = 0;
-            for (var i = 0; i < m_NumStackedObservations; i++)
+            for (var i = 0; i < this.m_NumStackedObservations; i++)
             {
-                var obsIndex = (m_CurrentIndex + 1 + i) % m_NumStackedObservations;
-                adapter.AddRange(m_StackedObservations[obsIndex], numWritten);
-                numWritten += m_UnstackedObservationSize;
+                var obsIndex = (this.m_CurrentIndex + 1 + i) % this.m_NumStackedObservations;
+                adapter.AddRange(this.m_StackedObservations[obsIndex], numWritten);
+                numWritten += this.m_UnstackedObservationSize;
             }
 
             return numWritten;
@@ -85,18 +85,18 @@ namespace MLAgents.Sensor
         /// </summary>
         public void Update()
         {
-            m_WrappedSensor.Update();
-            m_CurrentIndex = (m_CurrentIndex + 1) % m_NumStackedObservations;
+            this.m_WrappedSensor.Update();
+            this.m_CurrentIndex = (this.m_CurrentIndex + 1) % this.m_NumStackedObservations;
         }
 
         public int[] GetFloatObservationShape()
         {
-            return m_Shape;
+            return this.m_Shape;
         }
 
         public string GetName()
         {
-            return m_Name;
+            return this.m_Name;
         }
 
         public virtual byte[] GetCompressedObservation()

@@ -23,13 +23,13 @@ namespace MLAgents.Sensor
 
         public virtual bool IsVisual()
         {
-            var shape = GetObservationShape();
+            var shape = this.GetObservationShape();
             return shape.Length == 3;
         }
 
         public virtual bool IsVector()
         {
-            var shape = GetObservationShape();
+            var shape = this.GetObservationShape();
             return shape.Length == 1;
         }
     }

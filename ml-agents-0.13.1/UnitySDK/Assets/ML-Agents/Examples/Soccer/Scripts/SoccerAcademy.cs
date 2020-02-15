@@ -17,12 +17,12 @@ public class SoccerAcademy : Academy
 
     void Start()
     {
-        Physics.gravity *= gravityMultiplier; //for soccer a multiplier of 3 looks good
+        Physics.gravity *= this.gravityMultiplier; //for soccer a multiplier of 3 looks good
     }
 
     public override void InitializeAcademy()
     {
-        FloatProperties.RegisterCallback("gravity", f => { Physics.gravity = new Vector3(0, -f, 0); });
+        this.FloatProperties.RegisterCallback("gravity", f => { Physics.gravity = new Vector3(0, -f, 0); });
     }
 
     public override void AcademyStep()

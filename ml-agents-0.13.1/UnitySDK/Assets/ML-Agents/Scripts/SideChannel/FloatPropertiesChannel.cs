@@ -52,28 +52,28 @@ namespace MLAgents
         public override void OnMessageReceived(byte[] data)
         {
             var kv = DeserializeMessage(data);
-            m_FloatProperties[kv.Key] = kv.Value;
-            if (m_RegisteredActions.ContainsKey(kv.Key))
+            this.m_FloatProperties[kv.Key] = kv.Value;
+            if (this.m_RegisteredActions.ContainsKey(kv.Key))
             {
-                m_RegisteredActions[kv.Key].Invoke(kv.Value);
+                this.m_RegisteredActions[kv.Key].Invoke(kv.Value);
             }
         }
 
         public void SetProperty(string key, float value)
         {
-            m_FloatProperties[key] = value;
-            QueueMessageToSend(SerializeMessage(key, value));
-            if (m_RegisteredActions.ContainsKey(key))
+            this.m_FloatProperties[key] = value;
+            this.QueueMessageToSend(SerializeMessage(key, value));
+            if (this.m_RegisteredActions.ContainsKey(key))
             {
-                m_RegisteredActions[key].Invoke(value);
+                this.m_RegisteredActions[key].Invoke(value);
             }
         }
 
         public float GetPropertyWithDefault(string key, float defaultValue)
         {
-            if (m_FloatProperties.ContainsKey(key))
+            if (this.m_FloatProperties.ContainsKey(key))
             {
-                return m_FloatProperties[key];
+                return this.m_FloatProperties[key];
             }
             else
             {
@@ -83,12 +83,12 @@ namespace MLAgents
 
         public void RegisterCallback(string key, Action<float> action)
         {
-            m_RegisteredActions[key] = action;
+            this.m_RegisteredActions[key] = action;
         }
 
         public IList<string> ListProperties()
         {
-            return new List<string>(m_FloatProperties.Keys);
+            return new List<string>(this.m_FloatProperties.Keys);
         }
 
         private static KeyValuePair<string, float> DeserializeMessage(byte[] data)

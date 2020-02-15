@@ -14,7 +14,7 @@ public class WalkerAcademy : Academy
         Time.fixedDeltaTime = 0.01333f; //(75fps). default is .2 (60fps)
         Time.maximumDeltaTime = .15f; // Default is .33
 
-        FloatProperties.RegisterCallback("gravity", f => { Physics.gravity = new Vector3(0, -f, 0); });
+        this.FloatProperties.RegisterCallback("gravity", f => { Physics.gravity = new Vector3(0, -f, 0); });
 
     }
 

@@ -31,85 +31,85 @@ public class GridArea : MonoBehaviour
 
     public void Start()
     {
-        m_ResetParameters = FindObjectOfType<Academy>().FloatProperties;
+        this.m_ResetParameters = FindObjectOfType<Academy>().FloatProperties;
 
-        m_Objects = new[] { goalPref, pitPref };
+        this.m_Objects = new[] { this.goalPref, this.pitPref };
 
-        m_AgentCam = transform.Find("agentCam").GetComponent<Camera>();
+        this.m_AgentCam = this.transform.Find("agentCam").GetComponent<Camera>();
 
-        actorObjs = new List<GameObject>();
+        this.actorObjs = new List<GameObject>();
 
-        var sceneTransform = transform.Find("scene");
+        var sceneTransform = this.transform.Find("scene");
 
-        m_Plane = sceneTransform.Find("Plane").gameObject;
-        m_Sn = sceneTransform.Find("sN").gameObject;
-        m_Ss = sceneTransform.Find("sS").gameObject;
-        m_Sw = sceneTransform.Find("sW").gameObject;
-        m_Se = sceneTransform.Find("sE").gameObject;
-        m_InitialPosition = transform.position;
+        this.m_Plane = sceneTransform.Find("Plane").gameObject;
+        this.m_Sn = sceneTransform.Find("sN").gameObject;
+        this.m_Ss = sceneTransform.Find("sS").gameObject;
+        this.m_Sw = sceneTransform.Find("sW").gameObject;
+        this.m_Se = sceneTransform.Find("sE").gameObject;
+        this.m_InitialPosition = this.transform.position;
     }
 
     public void SetEnvironment()
     {
-        transform.position = m_InitialPosition * (m_ResetParameters.GetPropertyWithDefault("gridSize", 5f) + 1);
+        this.transform.position = this.m_InitialPosition * (this.m_ResetParameters.GetPropertyWithDefault("gridSize", 5f) + 1);
         var playersList = new List<int>();
 
-        for (var i = 0; i < (int)m_ResetParameters.GetPropertyWithDefault("numObstacles", 1); i++)
+        for (var i = 0; i < (int)this.m_ResetParameters.GetPropertyWithDefault("numObstacles", 1); i++)
         {
             playersList.Add(1);
         }
 
-        for (var i = 0; i < (int)m_ResetParameters.GetPropertyWithDefault("numGoals", 1f); i++)
+        for (var i = 0; i < (int)this.m_ResetParameters.GetPropertyWithDefault("numGoals", 1f); i++)
         {
             playersList.Add(0);
         }
-        players = playersList.ToArray();
+        this.players = playersList.ToArray();
 
-        var gridSize = (int)m_ResetParameters.GetPropertyWithDefault("gridSize", 5f);
-        m_Plane.transform.localScale = new Vector3(gridSize / 10.0f, 1f, gridSize / 10.0f);
-        m_Plane.transform.localPosition = new Vector3((gridSize - 1) / 2f, -0.5f, (gridSize - 1) / 2f);
-        m_Sn.transform.localScale = new Vector3(1, 1, gridSize + 2);
-        m_Ss.transform.localScale = new Vector3(1, 1, gridSize + 2);
-        m_Sn.transform.localPosition = new Vector3((gridSize - 1) / 2f, 0.0f, gridSize);
-        m_Ss.transform.localPosition = new Vector3((gridSize - 1) / 2f, 0.0f, -1);
-        m_Se.transform.localScale = new Vector3(1, 1, gridSize + 2);
-        m_Sw.transform.localScale = new Vector3(1, 1, gridSize + 2);
-        m_Se.transform.localPosition = new Vector3(gridSize, 0.0f, (gridSize - 1) / 2f);
-        m_Sw.transform.localPosition = new Vector3(-1, 0.0f, (gridSize - 1) / 2f);
+        var gridSize = (int)this.m_ResetParameters.GetPropertyWithDefault("gridSize", 5f);
+        this.m_Plane.transform.localScale = new Vector3(gridSize / 10.0f, 1f, gridSize / 10.0f);
+        this.m_Plane.transform.localPosition = new Vector3((gridSize - 1) / 2f, -0.5f, (gridSize - 1) / 2f);
+        this.m_Sn.transform.localScale = new Vector3(1, 1, gridSize + 2);
+        this.m_Ss.transform.localScale = new Vector3(1, 1, gridSize + 2);
+        this.m_Sn.transform.localPosition = new Vector3((gridSize - 1) / 2f, 0.0f, gridSize);
+        this.m_Ss.transform.localPosition = new Vector3((gridSize - 1) / 2f, 0.0f, -1);
+        this.m_Se.transform.localScale = new Vector3(1, 1, gridSize + 2);
+        this.m_Sw.transform.localScale = new Vector3(1, 1, gridSize + 2);
+        this.m_Se.transform.localPosition = new Vector3(gridSize, 0.0f, (gridSize - 1) / 2f);
+        this.m_Sw.transform.localPosition = new Vector3(-1, 0.0f, (gridSize - 1) / 2f);
 
-        m_AgentCam.orthographicSize = (gridSize) / 2f;
-        m_AgentCam.transform.localPosition = new Vector3((gridSize - 1) / 2f, gridSize + 1f, (gridSize - 1) / 2f);
+        this.m_AgentCam.orthographicSize = (gridSize) / 2f;
+        this.m_AgentCam.transform.localPosition = new Vector3((gridSize - 1) / 2f, gridSize + 1f, (gridSize - 1) / 2f);
     }
 
     public void AreaReset()
     {
-        var gridSize = (int)m_ResetParameters.GetPropertyWithDefault("gridSize", 5f); ;
-        foreach (var actor in actorObjs)
+        var gridSize = (int)this.m_ResetParameters.GetPropertyWithDefault("gridSize", 5f); ;
+        foreach (var actor in this.actorObjs)
         {
             DestroyImmediate(actor);
         }
-        SetEnvironment();
+        this.SetEnvironment();
 
-        actorObjs.Clear();
+        this.actorObjs.Clear();
 
         var numbers = new HashSet<int>();
-        while (numbers.Count < players.Length + 1)
+        while (numbers.Count < this.players.Length + 1)
         {
             numbers.Add(Random.Range(0, gridSize * gridSize));
         }
         var numbersA = Enumerable.ToArray(numbers);
 
-        for (var i = 0; i < players.Length; i++)
+        for (var i = 0; i < this.players.Length; i++)
         {
             var x = (numbersA[i]) / gridSize;
             var y = (numbersA[i]) % gridSize;
-            var actorObj = Instantiate(m_Objects[players[i]], transform);
+            var actorObj = Instantiate(this.m_Objects[this.players[i]], this.transform);
             actorObj.transform.localPosition = new Vector3(x, -0.25f, y);
-            actorObjs.Add(actorObj);
+            this.actorObjs.Add(actorObj);
         }
 
-        var xA = (numbersA[players.Length]) / gridSize;
-        var yA = (numbersA[players.Length]) % gridSize;
-        trueAgent.transform.localPosition = new Vector3(xA, -0.25f, yA);
+        var xA = (numbersA[this.players.Length]) / gridSize;
+        var yA = (numbersA[this.players.Length]) % gridSize;
+        this.trueAgent.transform.localPosition = new Vector3(xA, -0.25f, yA);
     }
 }

@@ -14,29 +14,29 @@ namespace MLAgents.Sensor
 
         public CameraSensor(Camera camera, int width, int height, bool grayscale, string name)
         {
-            m_Camera = camera;
-            m_Width = width;
-            m_Height = height;
-            m_Grayscale = grayscale;
-            m_Name = name;
-            m_Shape = new[] { height, width, grayscale ? 1 : 3 };
+            this.m_Camera = camera;
+            this.m_Width = width;
+            this.m_Height = height;
+            this.m_Grayscale = grayscale;
+            this.m_Name = name;
+            this.m_Shape = new[] { height, width, grayscale ? 1 : 3 };
         }
 
         public string GetName()
         {
-            return m_Name;
+            return this.m_Name;
         }
 
         public int[] GetFloatObservationShape()
         {
-            return m_Shape;
+            return this.m_Shape;
         }
 
         public byte[] GetCompressedObservation()
         {
             using (TimerStack.Instance.Scoped("CameraSensor.GetCompressedObservation"))
             {
-                var texture = ObservationToTexture(m_Camera, m_Width, m_Height);
+                var texture = ObservationToTexture(this.m_Camera, this.m_Width, this.m_Height);
                 // TODO support more types here, e.g. JPG
                 var compressed = texture.EncodeToPNG();
                 UnityEngine.Object.Destroy(texture);
@@ -48,8 +48,8 @@ namespace MLAgents.Sensor
         {
             using (TimerStack.Instance.Scoped("CameraSensor.WriteToTensor"))
             {
-                var texture = ObservationToTexture(m_Camera, m_Width, m_Height);
-                var numWritten = Utilities.TextureToTensorProxy(texture, adapter, m_Grayscale);
+                var texture = ObservationToTexture(this.m_Camera, this.m_Width, this.m_Height);
+                var numWritten = Utilities.TextureToTensorProxy(texture, adapter, this.m_Grayscale);
                 UnityEngine.Object.Destroy(texture);
                 return numWritten;
             }

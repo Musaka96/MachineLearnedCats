@@ -169,8 +169,8 @@ namespace MLAgents
         AgentInfo m_Info;
         public AgentInfo Info
         {
-            get { return m_Info; }
-            set { m_Info = value; }
+            get { return this.m_Info; }
+            set { this.m_Info = value; }
         }
 
         /// Current Agent action (message sent from Brain).
@@ -250,21 +250,21 @@ namespace MLAgents
         /// becomes enabled or active.
         void OnEnable()
         {
-            m_Id = gameObject.GetInstanceID();
+            this.m_Id = this.gameObject.GetInstanceID();
             var academy = FindObjectOfType<Academy>();
             academy.LazyInitialization();
-            OnEnableHelper(academy);
+            this.OnEnableHelper(academy);
 
-            m_Recorder = GetComponent<DemonstrationRecorder>();
+            this.m_Recorder = this.GetComponent<DemonstrationRecorder>();
         }
 
         /// Helper method for the <see cref="OnEnable"/> event, created to
         /// facilitate testing.
         void OnEnableHelper(Academy academy)
         {
-            m_Info = new AgentInfo();
-            m_Action = new AgentAction();
-            sensors = new List<ISensor>();
+            this.m_Info = new AgentInfo();
+            this.m_Action = new AgentAction();
+            this.sensors = new List<ISensor>();
 
             if (academy == null)
             {
@@ -272,17 +272,17 @@ namespace MLAgents
                     "No Academy Component could be found in the scene.");
             }
 
-            academy.AgentSetStatus += SetStatus;
-            academy.AgentResetIfDone += ResetIfDone;
-            academy.AgentSendState += SendInfo;
-            academy.DecideAction += DecideAction;
-            academy.AgentAct += AgentStep;
-            academy.AgentForceReset += _AgentReset;
-            m_PolicyFactory = GetComponent<BehaviorParameters>();
-            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
-            ResetData();
-            InitializeAgent();
-            InitializeSensors();
+            academy.AgentSetStatus += this.SetStatus;
+            academy.AgentResetIfDone += this.ResetIfDone;
+            academy.AgentSendState += this.SendInfo;
+            academy.DecideAction += this.DecideAction;
+            academy.AgentAct += this.AgentStep;
+            academy.AgentForceReset += this._AgentReset;
+            this.m_PolicyFactory = this.GetComponent<BehaviorParameters>();
+            this.m_Brain = this.m_PolicyFactory.GeneratePolicy(this.Heuristic);
+            this.ResetData();
+            this.InitializeAgent();
+            this.InitializeSensors();
         }
 
         /// Monobehavior function that is called when the attached GameObject
@@ -292,14 +292,14 @@ namespace MLAgents
             var academy = FindObjectOfType<Academy>();
             if (academy != null)
             {
-                academy.AgentSetStatus -= SetStatus;
-                academy.AgentResetIfDone -= ResetIfDone;
-                academy.AgentSendState -= SendInfo;
-                academy.DecideAction -= DecideAction;
-                academy.AgentAct -= AgentStep;
-                academy.AgentForceReset -= _AgentReset;
+                academy.AgentSetStatus -= this.SetStatus;
+                academy.AgentResetIfDone -= this.ResetIfDone;
+                academy.AgentSendState -= this.SendInfo;
+                academy.DecideAction -= this.DecideAction;
+                academy.AgentAct -= this.AgentStep;
+                academy.AgentForceReset -= this._AgentReset;
             }
-            m_Brain?.Dispose();
+            this.m_Brain?.Dispose();
         }
 
         /// <summary>
@@ -319,9 +319,9 @@ namespace MLAgents
             NNModel model,
             InferenceDevice inferenceDevice = InferenceDevice.CPU)
         {
-            m_PolicyFactory.GiveModel(behaviorName, model, inferenceDevice);
-            m_Brain?.Dispose();
-            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
+            this.m_PolicyFactory.GiveModel(behaviorName, model, inferenceDevice);
+            this.m_Brain?.Dispose();
+            this.m_Brain = this.m_PolicyFactory.GeneratePolicy(this.Heuristic);
         }
 
         /// <summary>
@@ -332,7 +332,7 @@ namespace MLAgents
         /// </returns>
         public int GetStepCount()
         {
-            return m_StepCount;
+            return this.m_StepCount;
         }
 
         /// <summary>
@@ -340,10 +340,10 @@ namespace MLAgents
         /// </summary>
         public void ResetReward()
         {
-            m_Reward = 0f;
-            if (m_Done)
+            this.m_Reward = 0f;
+            if (this.m_Done)
             {
-                m_CumulativeReward = 0f;
+                this.m_CumulativeReward = 0f;
             }
         }
 
@@ -354,8 +354,8 @@ namespace MLAgents
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
         {
-            m_CumulativeReward += (reward - m_Reward);
-            m_Reward = reward;
+            this.m_CumulativeReward += (reward - this.m_Reward);
+            this.m_Reward = reward;
         }
 
         /// <summary>
@@ -364,8 +364,8 @@ namespace MLAgents
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
         {
-            m_Reward += increment;
-            m_CumulativeReward += increment;
+            this.m_Reward += increment;
+            this.m_CumulativeReward += increment;
         }
 
         /// <summary>
@@ -374,7 +374,7 @@ namespace MLAgents
         /// <returns>The step reward.</returns>
         public float GetReward()
         {
-            return m_Reward;
+            return this.m_Reward;
         }
 
         /// <summary>
@@ -383,7 +383,7 @@ namespace MLAgents
         /// <returns>The episode reward.</returns>
         public float GetCumulativeReward()
         {
-            return m_CumulativeReward;
+            return this.m_CumulativeReward;
         }
 
         /// <summary>
@@ -391,7 +391,7 @@ namespace MLAgents
         /// </summary>
         public void Done()
         {
-            m_Done = true;
+            this.m_Done = true;
         }
 
         /// <summary>
@@ -399,8 +399,8 @@ namespace MLAgents
         /// </summary>
         public void RequestDecision()
         {
-            m_RequestDecision = true;
-            RequestAction();
+            this.m_RequestDecision = true;
+            this.RequestAction();
         }
 
         /// <summary>
@@ -408,7 +408,7 @@ namespace MLAgents
         /// </summary>
         public void RequestAction()
         {
-            m_RequestAction = true;
+            this.m_RequestAction = true;
         }
 
         /// <summary>
@@ -419,7 +419,7 @@ namespace MLAgents
         /// </returns>
         public bool IsMaxStepReached()
         {
-            return m_MaxStepReached;
+            return this.m_MaxStepReached;
         }
 
         /// <summary>
@@ -430,7 +430,7 @@ namespace MLAgents
         /// </returns>
         public bool IsDone()
         {
-            return m_Done;
+            return this.m_Done;
         }
 
         /// Helper function that resets all the data structures associated with
@@ -438,26 +438,26 @@ namespace MLAgents
         /// at the end of an episode.
         void ResetData()
         {
-            var param = m_PolicyFactory.brainParameters;
-            m_ActionMasker = new ActionMasker(param);
+            var param = this.m_PolicyFactory.brainParameters;
+            this.m_ActionMasker = new ActionMasker(param);
             // If we haven't initialized vectorActions, initialize to 0. This should only
             // happen during the creation of the Agent. In subsequent episodes, vectorAction
             // should stay the previous action before the Done(), so that it is properly recorded.
-            if (m_Action.vectorActions == null)
+            if (this.m_Action.vectorActions == null)
             {
                 if (param.vectorActionSpaceType == SpaceType.Continuous)
                 {
-                    m_Action.vectorActions = new float[param.vectorActionSize[0]];
-                    m_Info.storedVectorActions = new float[param.vectorActionSize[0]];
+                    this.m_Action.vectorActions = new float[param.vectorActionSize[0]];
+                    this.m_Info.storedVectorActions = new float[param.vectorActionSize[0]];
                 }
                 else
                 {
-                    m_Action.vectorActions = new float[param.vectorActionSize.Length];
-                    m_Info.storedVectorActions = new float[param.vectorActionSize.Length];
+                    this.m_Action.vectorActions = new float[param.vectorActionSize.Length];
+                    this.m_Info.storedVectorActions = new float[param.vectorActionSize.Length];
                 }
             }
 
-            m_Info.observations = new List<Observation>();
+            this.m_Info.observations = new List<Observation>();
         }
 
         /// <summary>
@@ -486,7 +486,7 @@ namespace MLAgents
             throw new UnityAgentsException(string.Format(
                     "The Heuristic method was not implemented for the Agent on the " +
                     "{0} GameObject.",
-                    gameObject.name));
+                    this.gameObject.name));
         }
 
         /// <summary>
@@ -497,58 +497,58 @@ namespace MLAgents
         {
             // Get all attached sensor components
             SensorComponent[] attachedSensorComponents;
-            if(m_PolicyFactory.useChildSensors)
+            if(this.m_PolicyFactory.useChildSensors)
             {
-                attachedSensorComponents = GetComponentsInChildren<SensorComponent>();
+                attachedSensorComponents = this.GetComponentsInChildren<SensorComponent>();
             }
             else
             {
-                attachedSensorComponents = GetComponents<SensorComponent>();
+                attachedSensorComponents = this.GetComponents<SensorComponent>();
             }
 
-            sensors.Capacity += attachedSensorComponents.Length;
+            this.sensors.Capacity += attachedSensorComponents.Length;
             foreach (var component in attachedSensorComponents)
             {
-                sensors.Add(component.CreateSensor());
+                this.sensors.Add(component.CreateSensor());
             }
 
             // Support legacy CollectObservations
-            var param = m_PolicyFactory.brainParameters;
+            var param = this.m_PolicyFactory.brainParameters;
             if (param.vectorObservationSize > 0)
             {
-                collectObservationsSensor = new VectorSensor(param.vectorObservationSize);
+                this.collectObservationsSensor = new VectorSensor(param.vectorObservationSize);
                 if (param.numStackedVectorObservations > 1)
                 {
-                    var stackingSensor = new StackingSensor(collectObservationsSensor, param.numStackedVectorObservations);
-                    sensors.Add(stackingSensor);
+                    var stackingSensor = new StackingSensor(this.collectObservationsSensor, param.numStackedVectorObservations);
+                    this.sensors.Add(stackingSensor);
                 }
                 else
                 {
-                    sensors.Add(collectObservationsSensor);
+                    this.sensors.Add(this.collectObservationsSensor);
                 }
             }
 
             // Sort the Sensors by name to ensure determinism
-            sensors.Sort((x, y) => x.GetName().CompareTo(y.GetName()));
+            this.sensors.Sort((x, y) => x.GetName().CompareTo(y.GetName()));
 
 #if DEBUG
             // Make sure the names are actually unique
-            for (var i = 0; i < sensors.Count - 1; i++)
+            for (var i = 0; i < this.sensors.Count - 1; i++)
             {
-                Debug.Assert(!sensors[i].GetName().Equals(sensors[i + 1].GetName()), "Sensor names must be unique.");
+                Debug.Assert(!this.sensors[i].GetName().Equals(this.sensors[i + 1].GetName()), "Sensor names must be unique.");
             }
 #endif
             // Create a buffer for writing vector sensor data too
             int numFloatObservations = 0;
-            for (var i = 0; i < sensors.Count; i++)
+            for (var i = 0; i < this.sensors.Count; i++)
             {
-                if (sensors[i].GetCompressionType() == SensorCompressionType.None)
+                if (this.sensors[i].GetCompressionType() == SensorCompressionType.None)
                 {
-                    numFloatObservations += sensors[i].ObservationSize();
+                    numFloatObservations += this.sensors[i].ObservationSize();
                 }
             }
 
-            m_VectorSensorBuffer = new float[numFloatObservations];
+            this.m_VectorSensorBuffer = new float[numFloatObservations];
         }
 
         /// <summary>
@@ -556,49 +556,49 @@ namespace MLAgents
         /// </summary>
         void SendInfoToBrain()
         {
-            if (m_Brain == null)
+            if (this.m_Brain == null)
             {
                 return;
             }
 
-            m_Info.storedVectorActions = m_Action.vectorActions;
-            m_Info.observations.Clear();
-            m_ActionMasker.ResetMask();
-            UpdateSensors();
+            this.m_Info.storedVectorActions = this.m_Action.vectorActions;
+            this.m_Info.observations.Clear();
+            this.m_ActionMasker.ResetMask();
+            this.UpdateSensors();
             using (TimerStack.Instance.Scoped("CollectObservations"))
             {
-                CollectObservations();
+                this.CollectObservations();
             }
-            m_Info.actionMasks = m_ActionMasker.GetMask();
+            this.m_Info.actionMasks = this.m_ActionMasker.GetMask();
 
             // var param = m_PolicyFactory.brainParameters; // look, no brain params!
 
-            m_Info.reward = m_Reward;
-            m_Info.done = m_Done;
-            m_Info.maxStepReached = m_MaxStepReached;
-            m_Info.id = m_Id;
+            this.m_Info.reward = this.m_Reward;
+            this.m_Info.done = this.m_Done;
+            this.m_Info.maxStepReached = this.m_MaxStepReached;
+            this.m_Info.id = this.m_Id;
 
-            m_Brain.RequestDecision(this);
+            this.m_Brain.RequestDecision(this);
 
-            if (m_Recorder != null && m_Recorder.record && Application.isEditor)
+            if (this.m_Recorder != null && this.m_Recorder.record && Application.isEditor)
             {
                 // This is a bit of a hack - if we're in inference mode, observations won't be generated
                 // But we need these to be generated for the recorder. So generate them here.
-                if (m_Info.observations.Count == 0)
+                if (this.m_Info.observations.Count == 0)
                 {
-                    GenerateSensorData();
+                    this.GenerateSensorData();
                 }
 
-                m_Recorder.WriteExperience(m_Info);
+                this.m_Recorder.WriteExperience(this.m_Info);
             }
 
         }
 
         void UpdateSensors()
         {
-            for (var i = 0; i < sensors.Count; i++)
+            for (var i = 0; i < this.sensors.Count; i++)
             {
-                sensors[i].Update();
+                this.sensors[i].Update();
             }
         }
 
@@ -612,22 +612,22 @@ namespace MLAgents
         {
             int floatsWritten = 0;
             // Generate data for all Sensors
-            for (var i = 0; i < sensors.Count; i++)
+            for (var i = 0; i < this.sensors.Count; i++)
             {
-                var sensor = sensors[i];
+                var sensor = this.sensors[i];
                 if (sensor.GetCompressionType() == SensorCompressionType.None)
                 {
                     // only handles 1D
                     // TODO handle in communicator code instead
-                    m_WriteAdapter.SetTarget(m_VectorSensorBuffer, floatsWritten);
-                    var numFloats = sensor.Write(m_WriteAdapter);
+                    this.m_WriteAdapter.SetTarget(this.m_VectorSensorBuffer, floatsWritten);
+                    var numFloats = sensor.Write(this.m_WriteAdapter);
                     var floatObs = new Observation
                     {
-                        FloatData = new ArraySegment<float>(m_VectorSensorBuffer, floatsWritten, numFloats),
+                        FloatData = new ArraySegment<float>(this.m_VectorSensorBuffer, floatsWritten, numFloats),
                         Shape = sensor.GetFloatObservationShape(),
                         CompressionType = sensor.GetCompressionType()
                     };
-                    m_Info.observations.Add(floatObs);
+                    this.m_Info.observations.Add(floatObs);
                     floatsWritten += numFloats;
                 }
                 else
@@ -638,7 +638,7 @@ namespace MLAgents
                         Shape = sensor.GetFloatObservationShape(),
                         CompressionType = sensor.GetCompressionType()
                     };
-                    m_Info.observations.Add(compressedObs);
+                    this.m_Info.observations.Add(compressedObs);
                 }
             }
         }
@@ -688,7 +688,7 @@ namespace MLAgents
         /// <param name="actionIndices">The indices of the masked actions on branch 0</param>
         protected void SetActionMask(IEnumerable<int> actionIndices)
         {
-            m_ActionMasker.SetActionMask(0, actionIndices);
+            this.m_ActionMasker.SetActionMask(0, actionIndices);
         }
 
         /// <summary>
@@ -700,7 +700,7 @@ namespace MLAgents
         /// <param name="actionIndex">The index of the masked action on branch 0</param>
         protected void SetActionMask(int actionIndex)
         {
-            m_ActionMasker.SetActionMask(0, new[] { actionIndex });
+            this.m_ActionMasker.SetActionMask(0, new[] { actionIndex });
         }
 
         /// <summary>
@@ -713,7 +713,7 @@ namespace MLAgents
         /// <param name="actionIndex">The index of the masked action</param>
         protected void SetActionMask(int branch, int actionIndex)
         {
-            m_ActionMasker.SetActionMask(branch, new[] { actionIndex });
+            this.m_ActionMasker.SetActionMask(branch, new[] { actionIndex });
         }
 
         /// <summary>
@@ -726,7 +726,7 @@ namespace MLAgents
         /// <param name="actionIndices">The indices of the masked actions</param>
         protected void SetActionMask(int branch, IEnumerable<int> actionIndices)
         {
-            m_ActionMasker.SetActionMask(branch, actionIndices);
+            this.m_ActionMasker.SetActionMask(branch, actionIndices);
         }
 
         /// <summary>
@@ -736,7 +736,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(float observation)
         {
-            collectObservationsSensor.AddObservation(observation);
+            this.collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -746,7 +746,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(int observation)
         {
-            collectObservationsSensor.AddObservation(observation);
+            this.collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -756,7 +756,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Vector3 observation)
         {
-            collectObservationsSensor.AddObservation(observation);
+            this.collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -766,7 +766,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Vector2 observation)
         {
-            collectObservationsSensor.AddObservation(observation);
+            this.collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -776,7 +776,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(IEnumerable<float> observation)
         {
-            collectObservationsSensor.AddObservation(observation);
+            this.collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -786,7 +786,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Quaternion observation)
         {
-            collectObservationsSensor.AddObservation(observation);
+            this.collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -796,12 +796,12 @@ namespace MLAgents
         /// <param name="observation"></param>
         protected void AddVectorObs(bool observation)
         {
-            collectObservationsSensor.AddObservation(observation);
+            this.collectObservationsSensor.AddObservation(observation);
         }
 
         protected void AddVectorObs(int observation, int range)
         {
-            collectObservationsSensor.AddOneHotObservation(observation, range);
+            this.collectObservationsSensor.AddOneHotObservation(observation, range);
         }
 
         /// <summary>
@@ -841,8 +841,8 @@ namespace MLAgents
         /// </summary>
         void ForceReset()
         {
-            m_HasAlreadyReset = false;
-            _AgentReset();
+            this.m_HasAlreadyReset = false;
+            this._AgentReset();
         }
 
         /// <summary>
@@ -851,14 +851,14 @@ namespace MLAgents
         /// </summary>
         void _AgentReset()
         {
-            ResetData();
-            m_StepCount = 0;
-            AgentReset();
+            this.ResetData();
+            this.m_StepCount = 0;
+            this.AgentReset();
         }
 
         public void UpdateAgentAction(AgentAction action)
         {
-            m_Action = action;
+            this.m_Action = action;
         }
 
         /// <summary>
@@ -867,7 +867,7 @@ namespace MLAgents
         /// <param name="vectorActions">Vector actions.</param>
         public void UpdateVectorAction(float[] vectorActions)
         {
-            m_Action.vectorActions = vectorActions;
+            this.m_Action.vectorActions = vectorActions;
         }
 
         /// <summary>
@@ -875,12 +875,12 @@ namespace MLAgents
         /// </summary>
         public void UpdateValueAction(float value)
         {
-            m_Action.value = value;
+            this.m_Action.value = value;
         }
 
         protected float GetValueEstimate()
         {
-            return m_Action.value;
+            return this.m_Action.value;
         }
 
         /// <summary>
@@ -904,7 +904,7 @@ namespace MLAgents
         /// <param name="academyStepCounter">Number of current steps in episode</param>
         void SetStatus(int academyStepCounter)
         {
-            MakeRequests(academyStepCounter);
+            this.MakeRequests(academyStepCounter);
         }
 
         /// Signals the agent that it must reset if its done flag is set to true.
@@ -912,31 +912,31 @@ namespace MLAgents
         {
             // If an agent is done, then it will also
             // request for a decision and an action
-            if (IsDone())
+            if (this.IsDone())
             {
-                if (agentParameters.resetOnDone)
+                if (this.agentParameters.resetOnDone)
                 {
-                    if (agentParameters.onDemandDecision)
+                    if (this.agentParameters.onDemandDecision)
                     {
-                        if (!m_HasAlreadyReset)
+                        if (!this.m_HasAlreadyReset)
                         {
                             // If event based, the agent can reset as soon
                             // as it is done
-                            _AgentReset();
-                            m_HasAlreadyReset = true;
+                            this._AgentReset();
+                            this.m_HasAlreadyReset = true;
                         }
                     }
-                    else if (m_RequestDecision)
+                    else if (this.m_RequestDecision)
                     {
                         // If not event based, the agent must wait to request a
                         // decision before resetting to keep multiple agents in sync.
-                        _AgentReset();
+                        this._AgentReset();
                     }
                 }
                 else
                 {
-                    m_Terminate = true;
-                    RequestDecision();
+                    this.m_Terminate = true;
+                    this.RequestDecision();
                 }
             }
         }
@@ -946,49 +946,49 @@ namespace MLAgents
         /// </summary>
         void SendInfo()
         {
-            if (m_RequestDecision)
+            if (this.m_RequestDecision)
             {
-                SendInfoToBrain();
-                ResetReward();
-                m_Done = false;
-                m_MaxStepReached = false;
-                m_RequestDecision = false;
+                this.SendInfoToBrain();
+                this.ResetReward();
+                this.m_Done = false;
+                this.m_MaxStepReached = false;
+                this.m_RequestDecision = false;
 
-                m_HasAlreadyReset = false;
+                this.m_HasAlreadyReset = false;
             }
         }
 
         /// Used by the brain to make the agent perform a step.
         void AgentStep()
         {
-            if (m_Terminate)
+            if (this.m_Terminate)
             {
-                m_Terminate = false;
-                ResetReward();
-                m_Done = false;
-                m_MaxStepReached = false;
-                m_RequestDecision = false;
-                m_RequestAction = false;
+                this.m_Terminate = false;
+                this.ResetReward();
+                this.m_Done = false;
+                this.m_MaxStepReached = false;
+                this.m_RequestDecision = false;
+                this.m_RequestAction = false;
 
-                m_HasAlreadyReset = false;
-                OnDisable();
-                AgentOnDone();
+                this.m_HasAlreadyReset = false;
+                this.OnDisable();
+                this.AgentOnDone();
             }
 
-            if ((m_RequestAction) && (m_Brain != null))
+            if ((this.m_RequestAction) && (this.m_Brain != null))
             {
-                m_RequestAction = false;
-                AgentAction(m_Action.vectorActions);
+                this.m_RequestAction = false;
+                this.AgentAction(this.m_Action.vectorActions);
             }
 
-            if ((m_StepCount >= agentParameters.maxStep)
-                && (agentParameters.maxStep > 0))
+            if ((this.m_StepCount >= this.agentParameters.maxStep)
+                && (this.agentParameters.maxStep > 0))
             {
-                m_MaxStepReached = true;
-                Done();
+                this.m_MaxStepReached = true;
+                this.Done();
             }
 
-            m_StepCount += 1;
+            this.m_StepCount += 1;
         }
 
         /// <summary>
@@ -997,22 +997,22 @@ namespace MLAgents
         /// </summary>
         void MakeRequests(int academyStepCounter)
         {
-            agentParameters.numberOfActionsBetweenDecisions =
-                Mathf.Max(agentParameters.numberOfActionsBetweenDecisions, 1);
-            if (!agentParameters.onDemandDecision)
+            this.agentParameters.numberOfActionsBetweenDecisions =
+                Mathf.Max(this.agentParameters.numberOfActionsBetweenDecisions, 1);
+            if (!this.agentParameters.onDemandDecision)
             {
-                RequestAction();
+                this.RequestAction();
                 if (academyStepCounter %
-                    agentParameters.numberOfActionsBetweenDecisions == 0)
+                    this.agentParameters.numberOfActionsBetweenDecisions == 0)
                 {
-                    RequestDecision();
+                    this.RequestDecision();
                 }
             }
         }
 
         void DecideAction()
         {
-            m_Brain?.DecideAction();
+            this.m_Brain?.DecideAction();
         }
     }
 }

@@ -69,30 +69,30 @@ namespace MLAgents
             y = (y + 1f) * 0.5f;
             z = (z + 1f) * 0.5f;
 
-            var xRot = Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x);
-            var yRot = Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y);
-            var zRot = Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z);
+            var xRot = Mathf.Lerp(this.joint.lowAngularXLimit.limit, this.joint.highAngularXLimit.limit, x);
+            var yRot = Mathf.Lerp(-this.joint.angularYLimit.limit, this.joint.angularYLimit.limit, y);
+            var zRot = Mathf.Lerp(-this.joint.angularZLimit.limit, this.joint.angularZLimit.limit, z);
 
-            currentXNormalizedRot =
-                Mathf.InverseLerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, xRot);
-            currentYNormalizedRot = Mathf.InverseLerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, yRot);
-            currentZNormalizedRot = Mathf.InverseLerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, zRot);
+            this.currentXNormalizedRot =
+                Mathf.InverseLerp(this.joint.lowAngularXLimit.limit, this.joint.highAngularXLimit.limit, xRot);
+            this.currentYNormalizedRot = Mathf.InverseLerp(-this.joint.angularYLimit.limit, this.joint.angularYLimit.limit, yRot);
+            this.currentZNormalizedRot = Mathf.InverseLerp(-this.joint.angularZLimit.limit, this.joint.angularZLimit.limit, zRot);
 
-            joint.targetRotation = Quaternion.Euler(xRot, yRot, zRot);
-            currentEularJointRotation = new Vector3(xRot, yRot, zRot);
+            this.joint.targetRotation = Quaternion.Euler(xRot, yRot, zRot);
+            this.currentEularJointRotation = new Vector3(xRot, yRot, zRot);
         }
 
         public void SetJointStrength(float strength)
         {
-            var rawVal = (strength + 1f) * 0.5f * thisJdController.maxJointForceLimit;
+            var rawVal = (strength + 1f) * 0.5f * this.thisJdController.maxJointForceLimit;
             var jd = new JointDrive
             {
-                positionSpring = thisJdController.maxJointSpring,
-                positionDamper = thisJdController.jointDampen,
+                positionSpring = this.thisJdController.maxJointSpring,
+                positionDamper = this.thisJdController.jointDampen,
                 maximumForce = rawVal
             };
-            joint.slerpDrive = jd;
-            currentStrength = jd.maximumForce;
+            this.joint.slerpDrive = jd;
+            this.currentStrength = jd.maximumForce;
         }
     }
 
@@ -128,11 +128,11 @@ namespace MLAgents
             if (!bp.groundContact)
             {
                 bp.groundContact = t.gameObject.AddComponent<GroundContact>();
-                bp.groundContact.agent = gameObject.GetComponent<Agent>();
+                bp.groundContact.agent = this.gameObject.GetComponent<Agent>();
             }
             else
             {
-                bp.groundContact.agent = gameObject.GetComponent<Agent>();
+                bp.groundContact.agent = this.gameObject.GetComponent<Agent>();
             }
 
             // Add & setup the target contact script
@@ -143,13 +143,13 @@ namespace MLAgents
             }
 
             bp.thisJdController = this;
-            bodyPartsDict.Add(t, bp);
-            bodyPartsList.Add(bp);
+            this.bodyPartsDict.Add(t, bp);
+            this.bodyPartsList.Add(bp);
         }
 
         public void GetCurrentJointForces()
         {
-            foreach (var bodyPart in bodyPartsDict.Values)
+            foreach (var bodyPart in this.bodyPartsDict.Values)
             {
                 if (bodyPart.joint)
                 {

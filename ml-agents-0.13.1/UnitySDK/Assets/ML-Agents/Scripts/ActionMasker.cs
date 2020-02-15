@@ -16,7 +16,7 @@ namespace MLAgents
 
         public ActionMasker(BrainParameters brainParameters)
         {
-            m_BrainParameters = brainParameters;
+            this.m_BrainParameters = brainParameters;
         }
 
         /// <summary>
@@ -30,35 +30,35 @@ namespace MLAgents
         public void SetActionMask(int branch, IEnumerable<int> actionIndices)
         {
             // If the branch does not exist, raise an error
-            if (branch >= m_BrainParameters.vectorActionSize.Length)
+            if (branch >= this.m_BrainParameters.vectorActionSize.Length)
                 throw new UnityAgentsException(
                     "Invalid Action Masking : Branch " + branch + " does not exist.");
 
-            var totalNumberActions = m_BrainParameters.vectorActionSize.Sum();
+            var totalNumberActions = this.m_BrainParameters.vectorActionSize.Sum();
 
             // By default, the masks are null. If we want to specify a new mask, we initialize
             // the actionMasks with trues.
-            if (m_CurrentMask == null)
+            if (this.m_CurrentMask == null)
             {
-                m_CurrentMask = new bool[totalNumberActions];
+                this.m_CurrentMask = new bool[totalNumberActions];
             }
 
             // If this is the first time the masked actions are used, we generate the starting
             // indices for each branch.
-            if (m_StartingActionIndices == null)
+            if (this.m_StartingActionIndices == null)
             {
-                m_StartingActionIndices = Utilities.CumSum(m_BrainParameters.vectorActionSize);
+                this.m_StartingActionIndices = Utilities.CumSum(this.m_BrainParameters.vectorActionSize);
             }
 
             // Perform the masking
             foreach (var actionIndex in actionIndices)
             {
-                if (actionIndex >= m_BrainParameters.vectorActionSize[branch])
+                if (actionIndex >= this.m_BrainParameters.vectorActionSize[branch])
                 {
                     throw new UnityAgentsException(
                         "Invalid Action Masking: Action Mask is too large for specified branch.");
                 }
-                m_CurrentMask[actionIndex + m_StartingActionIndices[branch]] = true;
+                this.m_CurrentMask[actionIndex + this.m_StartingActionIndices[branch]] = true;
             }
         }
 
@@ -69,11 +69,11 @@ namespace MLAgents
         /// actions.</returns>
         public bool[] GetMask()
         {
-            if (m_CurrentMask != null)
+            if (this.m_CurrentMask != null)
             {
-                AssertMask();
+                this.AssertMask();
             }
-            return m_CurrentMask;
+            return this.m_CurrentMask;
         }
 
         /// <summary>
@@ -82,16 +82,16 @@ namespace MLAgents
         void AssertMask()
         {
             // Action Masks can only be used in Discrete Control.
-            if (m_BrainParameters.vectorActionSpaceType != SpaceType.Discrete)
+            if (this.m_BrainParameters.vectorActionSpaceType != SpaceType.Discrete)
             {
                 throw new UnityAgentsException(
                     "Invalid Action Masking : Can only set action mask for Discrete Control.");
             }
 
-            var numBranches = m_BrainParameters.vectorActionSize.Length;
+            var numBranches = this.m_BrainParameters.vectorActionSize.Length;
             for (var branchIndex = 0; branchIndex < numBranches; branchIndex++)
             {
-                if (AreAllActionsMasked(branchIndex))
+                if (this.AreAllActionsMasked(branchIndex))
                 {
                     throw new UnityAgentsException(
                         "Invalid Action Masking : All the actions of branch " + branchIndex +
@@ -105,9 +105,9 @@ namespace MLAgents
         /// </summary>
         public void ResetMask()
         {
-            if (m_CurrentMask != null)
+            if (this.m_CurrentMask != null)
             {
-                Array.Clear(m_CurrentMask, 0, m_CurrentMask.Length);
+                Array.Clear(this.m_CurrentMask, 0, this.m_CurrentMask.Length);
             }
         }
 
@@ -118,15 +118,15 @@ namespace MLAgents
         /// <returns> True if all the actions of the branch are masked</returns>
         bool AreAllActionsMasked(int branch)
         {
-            if (m_CurrentMask == null)
+            if (this.m_CurrentMask == null)
             {
                 return false;
             }
-            var start = m_StartingActionIndices[branch];
-            var end = m_StartingActionIndices[branch + 1];
+            var start = this.m_StartingActionIndices[branch];
+            var end = this.m_StartingActionIndices[branch + 1];
             for (var i = start; i < end; i++)
             {
-                if (!m_CurrentMask[i])
+                if (!this.m_CurrentMask[i])
                 {
                     return false;
                 }

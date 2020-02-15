@@ -30,7 +30,7 @@ public class GridAgent : Agent
 
     public override void InitializeAgent()
     {
-        m_Academy = FindObjectOfType<Academy>();
+        this.m_Academy = FindObjectOfType<Academy>();
     }
 
     public override void CollectObservations()
@@ -39,9 +39,9 @@ public class GridAgent : Agent
         // observations.
 
         // Mask the necessary actions if selected by the user.
-        if (maskActions)
+        if (this.maskActions)
         {
-            SetMask();
+            this.SetMask();
         }
     }
 
@@ -51,54 +51,54 @@ public class GridAgent : Agent
     void SetMask()
     {
         // Prevents the agent from picking an action that would make it collide with a wall
-        var positionX = (int)transform.position.x;
-        var positionZ = (int)transform.position.z;
-        var maxPosition = (int)m_Academy.FloatProperties.GetPropertyWithDefault("gridSize", 5f) - 1;
+        var positionX = (int)this.transform.position.x;
+        var positionZ = (int)this.transform.position.z;
+        var maxPosition = (int)this.m_Academy.FloatProperties.GetPropertyWithDefault("gridSize", 5f) - 1;
 
         if (positionX == 0)
         {
-            SetActionMask(k_Left);
+            this.SetActionMask(k_Left);
         }
 
         if (positionX == maxPosition)
         {
-            SetActionMask(k_Right);
+            this.SetActionMask(k_Right);
         }
 
         if (positionZ == 0)
         {
-            SetActionMask(k_Down);
+            this.SetActionMask(k_Down);
         }
 
         if (positionZ == maxPosition)
         {
-            SetActionMask(k_Up);
+            this.SetActionMask(k_Up);
         }
     }
 
     // to be implemented by the developer
     public override void AgentAction(float[] vectorAction)
     {
-        AddReward(-0.01f);
+        this.AddReward(-0.01f);
         var action = Mathf.FloorToInt(vectorAction[0]);
 
-        var targetPos = transform.position;
+        var targetPos = this.transform.position;
         switch (action)
         {
             case k_NoAction:
                 // do nothing
                 break;
             case k_Right:
-                targetPos = transform.position + new Vector3(1f, 0, 0f);
+                targetPos = this.transform.position + new Vector3(1f, 0, 0f);
                 break;
             case k_Left:
-                targetPos = transform.position + new Vector3(-1f, 0, 0f);
+                targetPos = this.transform.position + new Vector3(-1f, 0, 0f);
                 break;
             case k_Up:
-                targetPos = transform.position + new Vector3(0f, 0, 1f);
+                targetPos = this.transform.position + new Vector3(0f, 0, 1f);
                 break;
             case k_Down:
-                targetPos = transform.position + new Vector3(0f, 0, -1f);
+                targetPos = this.transform.position + new Vector3(0f, 0, -1f);
                 break;
             default:
                 throw new ArgumentException("Invalid action value");
@@ -108,17 +108,17 @@ public class GridAgent : Agent
             targetPos, new Vector3(0.3f, 0.3f, 0.3f));
         if (hit.Where(col => col.gameObject.CompareTag("wall")).ToArray().Length == 0)
         {
-            transform.position = targetPos;
+            this.transform.position = targetPos;
 
             if (hit.Where(col => col.gameObject.CompareTag("goal")).ToArray().Length == 1)
             {
-                Done();
-                SetReward(1f);
+                this.Done();
+                this.SetReward(1f);
             }
             if (hit.Where(col => col.gameObject.CompareTag("pit")).ToArray().Length == 1)
             {
-                Done();
-                SetReward(-1f);
+                this.Done();
+                this.SetReward(-1f);
             }
         }
     }
@@ -147,35 +147,35 @@ public class GridAgent : Agent
     // to be implemented by the developer
     public override void AgentReset()
     {
-        area.AreaReset();
+        this.area.AreaReset();
     }
 
     public void FixedUpdate()
     {
-        WaitTimeInference();
+        this.WaitTimeInference();
     }
 
     void WaitTimeInference()
     {
-        if (renderCamera != null)
+        if (this.renderCamera != null)
         {
-            renderCamera.Render();
+            this.renderCamera.Render();
         }
 
-        if (m_Academy.IsCommunicatorOn)
+        if (this.m_Academy.IsCommunicatorOn)
         {
-            RequestDecision();
+            this.RequestDecision();
         }
         else
         {
-            if (m_TimeSinceDecision >= timeBetweenDecisionsAtInference)
+            if (this.m_TimeSinceDecision >= this.timeBetweenDecisionsAtInference)
             {
-                m_TimeSinceDecision = 0f;
-                RequestDecision();
+                this.m_TimeSinceDecision = 0f;
+                this.RequestDecision();
             }
             else
             {
-                m_TimeSinceDecision += Time.fixedDeltaTime;
+                this.m_TimeSinceDecision += Time.fixedDeltaTime;
             }
         }
     }

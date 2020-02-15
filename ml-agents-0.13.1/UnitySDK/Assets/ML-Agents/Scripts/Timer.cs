@@ -62,10 +62,10 @@ namespace MLAgents
         {
             get
             {
-                var currentTicks = m_TotalTicks;
-                if (m_TickStart != 0)
+                var currentTicks = this.m_TotalTicks;
+                if (this.m_TickStart != 0)
                 {
-                    currentTicks += (DateTime.Now.Ticks - m_TickStart);
+                    currentTicks += (DateTime.Now.Ticks - this.m_TickStart);
                 }
 
                 return currentTicks;
@@ -78,13 +78,13 @@ namespace MLAgents
         [DataMember(Name = "total")]
         public double TotalSeconds
         {
-            get { return CurrentTicks * s_TicksToSeconds; }
+            get { return this.CurrentTicks * s_TicksToSeconds; }
             set {}  // Serialization needs this, but unused.
         }
 
         public Dictionary<string, GaugeNode> Gauges
         {
-            get { return m_Gauges; }
+            get { return this.m_Gauges; }
         }
 
         /// <summary>
@@ -96,15 +96,15 @@ namespace MLAgents
             get
             {
                 long totalChildTicks = 0;
-                if (m_Children != null)
+                if (this.m_Children != null)
                 {
-                    foreach (var child in m_Children.Values)
+                    foreach (var child in this.m_Children.Values)
                     {
                         totalChildTicks += child.m_TotalTicks;
                     }
                 }
 
-                var selfTicks = Mathf.Max(0, CurrentTicks - totalChildTicks);
+                var selfTicks = Mathf.Max(0, this.CurrentTicks - totalChildTicks);
                 return selfTicks * s_TicksToSeconds;
             }
             set {}  // Serialization needs this, but unused.
@@ -112,29 +112,29 @@ namespace MLAgents
 
         public IReadOnlyDictionary<string, TimerNode> Children
         {
-            get { return m_Children; }
+            get { return this.m_Children; }
         }
 
         public int NumCalls
         {
-            get { return m_NumCalls; }
+            get { return this.m_NumCalls; }
         }
 
         public TimerNode(string name, bool isRoot = false)
         {
-            m_FullName = name;
+            this.m_FullName = name;
             if (isRoot)
             {
                 // The root node is considered always running. This means that when we output stats, it'll
                 // have a sensible value for total time (the running time since reset).
                 // The root node doesn't have a sampler since that could interfere with the profiler.
-                m_NumCalls = 1;
-                m_TickStart = DateTime.Now.Ticks;
-                m_Gauges = new Dictionary<string, GaugeNode>();
+                this.m_NumCalls = 1;
+                this.m_TickStart = DateTime.Now.Ticks;
+                this.m_Gauges = new Dictionary<string, GaugeNode>();
             }
             else
             {
-                m_Sampler = CustomSampler.Create(m_FullName);
+                this.m_Sampler = CustomSampler.Create(this.m_FullName);
             }
         }
 
@@ -143,8 +143,8 @@ namespace MLAgents
         /// </summary>
         public void Begin()
         {
-            m_Sampler?.Begin();
-            m_TickStart = DateTime.Now.Ticks;
+            this.m_Sampler?.Begin();
+            this.m_TickStart = DateTime.Now.Ticks;
         }
 
         /// <summary>
@@ -152,11 +152,11 @@ namespace MLAgents
         /// </summary>
         public void End()
         {
-            var elapsed = DateTime.Now.Ticks - m_TickStart;
-            m_TotalTicks += elapsed;
-            m_TickStart = 0;
-            m_NumCalls++;
-            m_Sampler?.End();
+            var elapsed = DateTime.Now.Ticks - this.m_TickStart;
+            this.m_TotalTicks += elapsed;
+            this.m_TickStart = 0;
+            this.m_NumCalls++;
+            this.m_Sampler?.End();
         }
 
         /// <summary>
@@ -170,20 +170,20 @@ namespace MLAgents
         public TimerNode GetChild(string name)
         {
             // Lazily create the children dictionary.
-            if (m_Children == null)
+            if (this.m_Children == null)
             {
-                m_Children = new Dictionary<string, TimerNode>();
+                this.m_Children = new Dictionary<string, TimerNode>();
             }
 
-            if (!m_Children.ContainsKey(name))
+            if (!this.m_Children.ContainsKey(name))
             {
-                var childFullName = m_FullName + s_Separator + name;
+                var childFullName = this.m_FullName + s_Separator + name;
                 var newChild = new TimerNode(childFullName);
-                m_Children[name] = newChild;
+                this.m_Children[name] = newChild;
                 return newChild;
             }
 
-            return m_Children[name];
+            return this.m_Children[name];
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace MLAgents
         public string DebugGetTimerString(string parentName = "", int level = 0)
         {
             var indent = new string(' ', 2 * level); // TODO generalize
-            var shortName = (level == 0) ? m_FullName : m_FullName.Replace(parentName + s_Separator, "");
+            var shortName = (level == 0) ? this.m_FullName : this.m_FullName.Replace(parentName + s_Separator, "");
             string timerString;
             if (level == 0)
             {
@@ -203,15 +203,15 @@ namespace MLAgents
             }
             else
             {
-                timerString = $"{indent}{shortName}\t\traw={TotalSeconds}  rawCount={m_NumCalls}\n";
+                timerString = $"{indent}{shortName}\t\traw={this.TotalSeconds}  rawCount={this.m_NumCalls}\n";
             }
 
             // TODO use StringBuilder? might be overkill since this is only debugging code?
-            if (m_Children != null)
+            if (this.m_Children != null)
             {
-                foreach (var c in m_Children.Values)
+                foreach (var c in this.m_Children.Values)
                 {
-                    timerString += c.DebugGetTimerString(m_FullName, level + 1);
+                    timerString += c.DebugGetTimerString(this.m_FullName, level + 1);
                 }
             }
             return timerString;
@@ -235,17 +235,17 @@ namespace MLAgents
         public GaugeNode(float value)
         {
             this.value = value;
-            minValue = value;
-            maxValue = value;
-            count = 1;
+            this.minValue = value;
+            this.maxValue = value;
+            this.count = 1;
         }
 
         public void Update(float newValue)
         {
-            minValue = Mathf.Min(minValue, newValue);
-            maxValue = Mathf.Max(maxValue, newValue);
-            value = newValue;
-            ++count;
+            this.minValue = Mathf.Min(this.minValue, newValue);
+            this.maxValue = Mathf.Max(this.maxValue, newValue);
+            this.value = newValue;
+            ++this.count;
         }
     }
 
@@ -287,14 +287,14 @@ namespace MLAgents
 
         TimerStack()
         {
-            Reset();
+            this.Reset();
         }
 
         public void Reset(string name = "root")
         {
-            m_Stack = new Stack<TimerNode>();
-            m_RootNode = new TimerNode(name, true);
-            m_Stack.Push(m_RootNode);
+            this.m_Stack = new Stack<TimerNode>();
+            this.m_RootNode = new TimerNode(name, true);
+            this.m_Stack.Push(this.m_RootNode);
         }
 
         public static TimerStack Instance
@@ -304,7 +304,7 @@ namespace MLAgents
 
         public TimerNode RootNode
         {
-            get { return m_RootNode; }
+            get { return this.m_RootNode; }
         }
 
         public void SetGauge(string name, float value)
@@ -312,28 +312,28 @@ namespace MLAgents
             if (!float.IsNaN(value))
             {
                 GaugeNode gauge;
-                if (m_RootNode.Gauges.TryGetValue(name, out gauge))
+                if (this.m_RootNode.Gauges.TryGetValue(name, out gauge))
                 {
                     gauge.Update(value);
                 }
                 else
                 {
-                    m_RootNode.Gauges[name] = new GaugeNode(value);
+                    this.m_RootNode.Gauges[name] = new GaugeNode(value);
                 }
             }
         }
 
         void Push(string name)
         {
-            var current = m_Stack.Peek();
+            var current = this.m_Stack.Peek();
             var next = current.GetChild(name);
-            m_Stack.Push(next);
+            this.m_Stack.Push(next);
             next.Begin();
         }
 
         void Pop()
         {
-            var node = m_Stack.Pop();
+            var node = this.m_Stack.Pop();
             node.End();
         }
 
@@ -344,7 +344,7 @@ namespace MLAgents
         /// <returns></returns>
         public TimerStack Scoped(string name)
         {
-            Push(name);
+            this.Push(name);
             return this;
         }
 
@@ -356,7 +356,7 @@ namespace MLAgents
         /// </summary>
         public void Dispose()
         {
-            Pop();
+            this.Pop();
         }
 
         /// <summary>
@@ -366,7 +366,7 @@ namespace MLAgents
         /// <returns></returns>
         public string DebugGetTimerString()
         {
-            return m_RootNode.DebugGetTimerString();
+            return this.m_RootNode.DebugGetTimerString();
         }
 
         /// <summary>
@@ -382,7 +382,7 @@ namespace MLAgents
                 filename = $"{fullpath}/csharp_timers.json";
             }
             var fs = new FileStream(filename, FileMode.Create, FileAccess.Write);
-            SaveJsonTimers(fs);
+            this.SaveJsonTimers(fs);
             fs.Close();
         }
 
@@ -395,7 +395,7 @@ namespace MLAgents
             var jsonSettings = new DataContractJsonSerializerSettings();
             jsonSettings.UseSimpleDictionaryFormat = true;
             var ser = new DataContractJsonSerializer(typeof(TimerNode), jsonSettings);
-            ser.WriteObject(stream, m_RootNode);
+            ser.WriteObject(stream, this.m_RootNode);
         }
     }
 }

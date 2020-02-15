@@ -26,13 +26,13 @@ public class TennisAgent : Agent
 
     public override void InitializeAgent()
     {
-        m_AgentRb = GetComponent<Rigidbody>();
-        m_BallRb = ball.GetComponent<Rigidbody>();
+        this.m_AgentRb = this.GetComponent<Rigidbody>();
+        this.m_BallRb = this.ball.GetComponent<Rigidbody>();
         var canvas = GameObject.Find(k_CanvasName);
         GameObject scoreBoard;
         var academy = FindObjectOfType<Academy>();
-        m_ResetParams = academy.FloatProperties;
-        if (invertX)
+        this.m_ResetParams = academy.FloatProperties;
+        if (this.invertX)
         {
             scoreBoard = canvas.transform.Find(k_ScoreBoardBName).gameObject;
         }
@@ -40,44 +40,44 @@ public class TennisAgent : Agent
         {
             scoreBoard = canvas.transform.Find(k_ScoreBoardAName).gameObject;
         }
-        m_TextComponent = scoreBoard.GetComponent<Text>();
-        SetResetParameters();
+        this.m_TextComponent = scoreBoard.GetComponent<Text>();
+        this.SetResetParameters();
     }
 
     public override void CollectObservations()
     {
-        AddVectorObs(m_InvertMult * (transform.position.x - myArea.transform.position.x));
-        AddVectorObs(transform.position.y - myArea.transform.position.y);
-        AddVectorObs(m_InvertMult * m_AgentRb.velocity.x);
-        AddVectorObs(m_AgentRb.velocity.y);
+        this.AddVectorObs(this.m_InvertMult * (this.transform.position.x - this.myArea.transform.position.x));
+        this.AddVectorObs(this.transform.position.y - this.myArea.transform.position.y);
+        this.AddVectorObs(this.m_InvertMult * this.m_AgentRb.velocity.x);
+        this.AddVectorObs(this.m_AgentRb.velocity.y);
 
-        AddVectorObs(m_InvertMult * (ball.transform.position.x - myArea.transform.position.x));
-        AddVectorObs(ball.transform.position.y - myArea.transform.position.y);
-        AddVectorObs(m_InvertMult * m_BallRb.velocity.x);
-        AddVectorObs(m_BallRb.velocity.y);
+        this.AddVectorObs(this.m_InvertMult * (this.ball.transform.position.x - this.myArea.transform.position.x));
+        this.AddVectorObs(this.ball.transform.position.y - this.myArea.transform.position.y);
+        this.AddVectorObs(this.m_InvertMult * this.m_BallRb.velocity.x);
+        this.AddVectorObs(this.m_BallRb.velocity.y);
     }
 
     public override void AgentAction(float[] vectorAction)
     {
-        var moveX = Mathf.Clamp(vectorAction[0], -1f, 1f) * m_InvertMult;
+        var moveX = Mathf.Clamp(vectorAction[0], -1f, 1f) * this.m_InvertMult;
         var moveY = Mathf.Clamp(vectorAction[1], -1f, 1f);
 
-        if (moveY > 0.5 && transform.position.y - transform.parent.transform.position.y < -1.5f)
+        if (moveY > 0.5 && this.transform.position.y - this.transform.parent.transform.position.y < -1.5f)
         {
-            m_AgentRb.velocity = new Vector3(m_AgentRb.velocity.x, 7f, 0f);
+            this.m_AgentRb.velocity = new Vector3(this.m_AgentRb.velocity.x, 7f, 0f);
         }
 
-        m_AgentRb.velocity = new Vector3(moveX * 30f, m_AgentRb.velocity.y, 0f);
+        this.m_AgentRb.velocity = new Vector3(moveX * 30f, this.m_AgentRb.velocity.y, 0f);
 
-        if (invertX && transform.position.x - transform.parent.transform.position.x < -m_InvertMult ||
-            !invertX && transform.position.x - transform.parent.transform.position.x > -m_InvertMult)
+        if (this.invertX && this.transform.position.x - this.transform.parent.transform.position.x < -this.m_InvertMult ||
+            !this.invertX && this.transform.position.x - this.transform.parent.transform.position.x > -this.m_InvertMult)
         {
-            transform.position = new Vector3(-m_InvertMult + transform.parent.transform.position.x,
-                transform.position.y,
-                transform.position.z);
+            this.transform.position = new Vector3(-this.m_InvertMult + this.transform.parent.transform.position.x,
+                this.transform.position.y,
+                this.transform.position.z);
         }
 
-        m_TextComponent.text = score.ToString();
+        this.m_TextComponent.text = this.score.ToString();
     }
 
     public override float[] Heuristic()
@@ -91,33 +91,33 @@ public class TennisAgent : Agent
 
     public override void AgentReset()
     {
-        m_InvertMult = invertX ? -1f : 1f;
+        this.m_InvertMult = this.invertX ? -1f : 1f;
 
-        transform.position = new Vector3(-m_InvertMult * Random.Range(6f, 8f), -1.5f, -3.5f) + transform.parent.transform.position;
-        m_AgentRb.velocity = new Vector3(0f, 0f, 0f);
+        this.transform.position = new Vector3(-this.m_InvertMult * Random.Range(6f, 8f), -1.5f, -3.5f) + this.transform.parent.transform.position;
+        this.m_AgentRb.velocity = new Vector3(0f, 0f, 0f);
 
-        SetResetParameters();
+        this.SetResetParameters();
     }
 
     public void SetRacket()
     {
-        angle = m_ResetParams.GetPropertyWithDefault("angle", 55);
-        gameObject.transform.eulerAngles = new Vector3(
-            gameObject.transform.eulerAngles.x,
-            gameObject.transform.eulerAngles.y,
-            m_InvertMult * angle
+        this.angle = this.m_ResetParams.GetPropertyWithDefault("angle", 55);
+        this.gameObject.transform.eulerAngles = new Vector3(
+            this.gameObject.transform.eulerAngles.x,
+            this.gameObject.transform.eulerAngles.y,
+            this.m_InvertMult * this.angle
         );
     }
 
     public void SetBall()
     {
-        scale = m_ResetParams.GetPropertyWithDefault("scale", 1);
-        ball.transform.localScale = new Vector3(scale, scale, scale);
+        this.scale = this.m_ResetParams.GetPropertyWithDefault("scale", 1);
+        this.ball.transform.localScale = new Vector3(this.scale, this.scale, this.scale);
     }
 
     public void SetResetParameters()
     {
-        SetRacket();
-        SetBall();
+        this.SetRacket();
+        this.SetBall();
     }
 }

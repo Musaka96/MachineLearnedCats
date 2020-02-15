@@ -19,17 +19,17 @@ namespace MLAgents
 
         void Start()
         {
-            if (Application.isEditor && record)
+            if (Application.isEditor && this.record)
             {
-                InitializeDemoStore();
+                this.InitializeDemoStore();
             }
         }
 
         void Update()
         {
-            if (Application.isEditor && record && m_DemoStore == null)
+            if (Application.isEditor && this.record && this.m_DemoStore == null)
             {
-                InitializeDemoStore();
+                this.InitializeDemoStore();
             }
         }
 
@@ -38,15 +38,15 @@ namespace MLAgents
         /// </summary>
         public void InitializeDemoStore(IFileSystem fileSystem = null)
         {
-            m_RecordingAgent = GetComponent<Agent>();
-            m_DemoStore = new DemonstrationStore(fileSystem);
-            var behaviorParams = GetComponent<BehaviorParameters>();
-            demonstrationName = SanitizeName(demonstrationName, MaxNameLength);
-            m_DemoStore.Initialize(
-                demonstrationName,
+            this.m_RecordingAgent = this.GetComponent<Agent>();
+            this.m_DemoStore = new DemonstrationStore(fileSystem);
+            var behaviorParams = this.GetComponent<BehaviorParameters>();
+            this.demonstrationName = SanitizeName(this.demonstrationName, MaxNameLength);
+            this.m_DemoStore.Initialize(
+                this.demonstrationName,
                 behaviorParams.brainParameters,
                 behaviorParams.behaviorName);
-            Monitor.Log("Recording Demonstration of Agent: ", m_RecordingAgent.name);
+            Monitor.Log("Recording Demonstration of Agent: ", this.m_RecordingAgent.name);
         }
 
         /// <summary>
@@ -70,15 +70,15 @@ namespace MLAgents
         /// </summary>
         public void WriteExperience(AgentInfo info)
         {
-            m_DemoStore.Record(info);
+            this.m_DemoStore.Record(info);
         }
 
         public void Close()
         {
-            if (m_DemoStore != null)
+            if (this.m_DemoStore != null)
             {
-                m_DemoStore.Close();
-                m_DemoStore = null;
+                this.m_DemoStore.Close();
+                this.m_DemoStore = null;
             }
         }
 
@@ -87,9 +87,9 @@ namespace MLAgents
         /// </summary>
         void OnApplicationQuit()
         {
-            if (Application.isEditor && record)
+            if (Application.isEditor && this.record)
             {
-                Close();
+                this.Close();
             }
         }
     }

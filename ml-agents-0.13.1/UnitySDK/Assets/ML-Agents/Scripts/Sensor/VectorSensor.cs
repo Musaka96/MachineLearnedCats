@@ -18,52 +18,52 @@ namespace MLAgents.Sensor
                 name = $"VectorSensor_size{observationSize}";
             }
 
-            m_Observations = new List<float>(observationSize);
-            m_Name = name;
-            m_Shape = new[] { observationSize };
+            this.m_Observations = new List<float>(observationSize);
+            this.m_Name = name;
+            this.m_Shape = new[] { observationSize };
         }
 
         public int Write(WriteAdapter adapter)
         {
-            var expectedObservations = m_Shape[0];
-            if (m_Observations.Count > expectedObservations)
+            var expectedObservations = this.m_Shape[0];
+            if (this.m_Observations.Count > expectedObservations)
             {
                 // Too many observations, truncate
                 Debug.LogWarningFormat(
                     "More observations ({0}) made than vector observation size ({1}). The observations will be truncated.",
-                    m_Observations.Count, expectedObservations
+                    this.m_Observations.Count, expectedObservations
                 );
-                m_Observations.RemoveRange(expectedObservations, m_Observations.Count - expectedObservations);
+                this.m_Observations.RemoveRange(expectedObservations, this.m_Observations.Count - expectedObservations);
             }
-            else if (m_Observations.Count < expectedObservations)
+            else if (this.m_Observations.Count < expectedObservations)
             {
                 // Not enough observations; pad with zeros.
                 Debug.LogWarningFormat(
                     "Fewer observations ({0}) made than vector observation size ({1}). The observations will be padded.",
-                    m_Observations.Count, expectedObservations
+                    this.m_Observations.Count, expectedObservations
                 );
-                for (int i = m_Observations.Count; i < expectedObservations; i++)
+                for (int i = this.m_Observations.Count; i < expectedObservations; i++)
                 {
-                    m_Observations.Add(0);
+                    this.m_Observations.Add(0);
                 }
             }
-            adapter.AddRange(m_Observations);
+            adapter.AddRange(this.m_Observations);
             return expectedObservations;
         }
 
         public void Update()
         {
-            Clear();
+            this.Clear();
         }
 
         public int[] GetFloatObservationShape()
         {
-            return m_Shape;
+            return this.m_Shape;
         }
 
         public string GetName()
         {
-            return m_Name;
+            return this.m_Name;
         }
 
         public virtual byte[] GetCompressedObservation()
@@ -78,12 +78,12 @@ namespace MLAgents.Sensor
 
         void Clear()
         {
-            m_Observations.Clear();
+            this.m_Observations.Clear();
         }
 
         void AddFloatObs(float obs)
         {
-            m_Observations.Add(obs);
+            this.m_Observations.Add(obs);
         }
 
         // Compatibility methods with Agent observation. These should be removed eventually.
@@ -94,7 +94,7 @@ namespace MLAgents.Sensor
         /// <param name="observation">Observation.</param>
         public void AddObservation(float observation)
         {
-            AddFloatObs(observation);
+            this.AddFloatObs(observation);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace MLAgents.Sensor
         /// <param name="observation">Observation.</param>
         public void AddObservation(int observation)
         {
-            AddFloatObs(observation);
+            this.AddFloatObs(observation);
         }
 
         /// <summary>
@@ -112,9 +112,9 @@ namespace MLAgents.Sensor
         /// <param name="observation">Observation.</param>
         public void AddObservation(Vector3 observation)
         {
-            AddFloatObs(observation.x);
-            AddFloatObs(observation.y);
-            AddFloatObs(observation.z);
+            this.AddFloatObs(observation.x);
+            this.AddFloatObs(observation.y);
+            this.AddFloatObs(observation.z);
         }
 
         /// <summary>
@@ -123,8 +123,8 @@ namespace MLAgents.Sensor
         /// <param name="observation">Observation.</param>
         public void AddObservation(Vector2 observation)
         {
-            AddFloatObs(observation.x);
-            AddFloatObs(observation.y);
+            this.AddFloatObs(observation.x);
+            this.AddFloatObs(observation.y);
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace MLAgents.Sensor
         {
             foreach (var f in observation)
             {
-                AddFloatObs(f);
+                this.AddFloatObs(f);
             }
         }
 
@@ -145,10 +145,10 @@ namespace MLAgents.Sensor
         /// <param name="observation">Observation.</param>
         public void AddObservation(Quaternion observation)
         {
-            AddFloatObs(observation.x);
-            AddFloatObs(observation.y);
-            AddFloatObs(observation.z);
-            AddFloatObs(observation.w);
+            this.AddFloatObs(observation.x);
+            this.AddFloatObs(observation.y);
+            this.AddFloatObs(observation.z);
+            this.AddFloatObs(observation.w);
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace MLAgents.Sensor
         /// <param name="observation"></param>
         public void AddObservation(bool observation)
         {
-            AddFloatObs(observation ? 1f : 0f);
+            this.AddFloatObs(observation ? 1f : 0f);
         }
 
 
@@ -165,7 +165,7 @@ namespace MLAgents.Sensor
         {
             for (var i = 0; i < range; i++)
             {
-                AddFloatObs(i == observation ? 1.0f : 0.0f);
+                this.AddFloatObs(i == observation ? 1.0f : 0.0f);
             }
         }
     }

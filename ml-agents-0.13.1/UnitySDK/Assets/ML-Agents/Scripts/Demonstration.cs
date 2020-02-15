@@ -16,8 +16,8 @@ namespace MLAgents
         public void Initialize(BrainParameters brainParams,
             DemonstrationMetaData demonstrationMetaData)
         {
-            brainParameters = brainParams;
-            metaData = demonstrationMetaData;
+            this.brainParameters = brainParams;
+            this.metaData = demonstrationMetaData;
         }
     }
 

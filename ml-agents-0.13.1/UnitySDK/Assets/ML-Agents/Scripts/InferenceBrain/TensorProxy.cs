@@ -32,7 +32,7 @@ namespace MLAgents.InferenceBrain
         public TensorType valueType;
 
         // Since Type is not serializable, we use the DisplayType for the Inspector
-        public Type DataType => k_TypeMap[valueType];
+        public Type DataType => k_TypeMap[this.valueType];
         public long[] shape;
         public Tensor data;
     }

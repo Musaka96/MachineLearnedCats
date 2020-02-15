@@ -7,15 +7,15 @@ public class FoodLogic : MonoBehaviour
 
     public void OnEaten()
     {
-        if (respawn)
+        if (this.respawn)
         {
-            transform.position = new Vector3(Random.Range(-myArea.range, myArea.range),
+            this.transform.position = new Vector3(Random.Range(-this.myArea.range, this.myArea.range),
                 3f,
-                Random.Range(-myArea.range, myArea.range)) + myArea.transform.position;
+                Random.Range(-this.myArea.range, this.myArea.range)) + this.myArea.transform.position;
         }
         else
         {
-            Destroy(gameObject);
+            Destroy(this.gameObject);
         }
     }
 }

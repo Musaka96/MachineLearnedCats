@@ -11,12 +11,12 @@ public class PyramidArea : Area
 
     public void CreatePyramid(int numObjects, int spawnAreaIndex)
     {
-        CreateObject(numObjects, pyramid, spawnAreaIndex);
+        this.CreateObject(numObjects, this.pyramid, spawnAreaIndex);
     }
 
     public void CreateStonePyramid(int numObjects, int spawnAreaIndex)
     {
-        CreateObject(numObjects, stonePyramid, spawnAreaIndex);
+        this.CreateObject(numObjects, this.stonePyramid, spawnAreaIndex);
     }
 
     void CreateObject(int numObjects, GameObject desiredObject, int spawnAreaIndex)
@@ -24,14 +24,14 @@ public class PyramidArea : Area
         for (var i = 0; i < numObjects; i++)
         {
             var newObject = Instantiate(desiredObject, Vector3.zero,
-                Quaternion.Euler(0f, 0f, 0f), transform);
-            PlaceObject(newObject, spawnAreaIndex);
+                Quaternion.Euler(0f, 0f, 0f), this.transform);
+            this.PlaceObject(newObject, spawnAreaIndex);
         }
     }
 
     public void PlaceObject(GameObject objectToPlace, int spawnAreaIndex)
     {
-        var spawnTransform = spawnAreas[spawnAreaIndex].transform;
+        var spawnTransform = this.spawnAreas[spawnAreaIndex].transform;
         var xRange = spawnTransform.localScale.x / 2.1f;
         var zRange = spawnTransform.localScale.z / 2.1f;
 
@@ -41,7 +41,7 @@ public class PyramidArea : Area
 
     public void CleanPyramidArea()
     {
-        foreach (Transform child in transform)
+        foreach (Transform child in this.transform)
             if (child.CompareTag("pyramid"))
             {
                 Destroy(child.gameObject);

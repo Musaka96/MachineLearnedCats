@@ -17,21 +17,21 @@ namespace MLAgents
         /// <inheritdoc />
         public HeuristicPolicy(Func<float[]> heuristic)
         {
-            m_Heuristic = heuristic;
+            this.m_Heuristic = heuristic;
         }
 
         /// <inheritdoc />
         public void RequestDecision(Agent agent)
         {
-            m_Agent = agent;
+            this.m_Agent = agent;
         }
 
         /// <inheritdoc />
         public void DecideAction()
         {
-            if (m_Agent != null)
+            if (this.m_Agent != null)
             {
-                m_Agent.UpdateVectorAction(m_Heuristic.Invoke());
+                this.m_Agent.UpdateVectorAction(this.m_Heuristic.Invoke());
             }
         }
 

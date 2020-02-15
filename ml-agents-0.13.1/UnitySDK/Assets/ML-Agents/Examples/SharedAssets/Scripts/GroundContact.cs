@@ -25,15 +25,15 @@ namespace MLAgents
         {
             if (col.transform.CompareTag(k_Ground))
             {
-                touchingGround = true;
-                if (penalizeGroundContact)
+                this.touchingGround = true;
+                if (this.penalizeGroundContact)
                 {
-                    agent.SetReward(groundContactPenalty);
+                    this.agent.SetReward(this.groundContactPenalty);
                 }
 
-                if (agentDoneOnGroundContact)
+                if (this.agentDoneOnGroundContact)
                 {
-                    agent.Done();
+                    this.agent.Done();
                 }
             }
         }
@@ -45,7 +45,7 @@ namespace MLAgents
         {
             if (other.transform.CompareTag(k_Ground))
             {
-                touchingGround = false;
+                this.touchingGround = false;
             }
         }
     }
