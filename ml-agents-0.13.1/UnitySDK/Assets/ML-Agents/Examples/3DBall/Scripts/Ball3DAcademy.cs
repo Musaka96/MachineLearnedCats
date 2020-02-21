@@ -5,7 +5,7 @@ public class Ball3DAcademy : Academy
 {
     public override void InitializeAcademy()
     {
-        this.FloatProperties.RegisterCallback("gravity", f => { Physics.gravity = new Vector3(0, -f, 0); });
+        //this.FloatProperties.RegisterCallback("gravity", f => { Physics.gravity = new Vector3(0, -f, 0); });
     }
 
 }
