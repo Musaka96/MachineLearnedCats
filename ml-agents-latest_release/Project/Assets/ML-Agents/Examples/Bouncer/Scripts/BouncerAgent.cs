@@ -33,16 +33,30 @@ public class BouncerAgent : Agent
 
     public override void AgentAction(float[] vectorAction)
     {
+            Debug.Log("----------------------");
         for (var i = 0; i < vectorAction.Length; i++)
         {
+        Debug.Log(vectorAction[i]);
             vectorAction[i] = Mathf.Clamp(vectorAction[i], -1f, 1f);
         }
+            Debug.Log("----------------------");
+
         var x = vectorAction[0];
         var y = ScaleAction(vectorAction[1], 0, 1);
+        //Debug.Log("y=" + vectorAction[1] + "  scaleAction=" + y);
+
         var z = vectorAction[2];
         m_Rb.AddForce(new Vector3(x, y + 1, z) * strength);
 
-        AddReward(-0.05f * (
+
+        //timeHorizon
+
+        //Debug.Log("Reward: " + -0.05f * (
+        //    vectorAction[0] * vectorAction[0] +
+        //    vectorAction[1] * vectorAction[1] +
+        //    vectorAction[2] * vectorAction[2]) / 3f);
+
+        this.AddReward(-0.05f * (
             vectorAction[0] * vectorAction[0] +
             vectorAction[1] * vectorAction[1] +
             vectorAction[2] * vectorAction[2]) / 3f);

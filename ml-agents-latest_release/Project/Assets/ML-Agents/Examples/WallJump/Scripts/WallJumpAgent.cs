@@ -186,14 +186,17 @@ public class WallJumpAgent : Agent
             dirToGo = (largeGrounded ? 1f : 0.5f) * 1f * transform.forward;
         else if (dirToGoForwardAction == 2)
             dirToGo = (largeGrounded ? 1f : 0.5f) * -1f * transform.forward;
+
         if (rotateDirAction == 1)
             rotateDir = transform.up * -1f;
         else if (rotateDirAction == 2)
             rotateDir = transform.up * 1f;
+
         if (dirToGoSideAction == 1)
             dirToGo = (largeGrounded ? 1f : 0.5f) * -0.6f * transform.right;
         else if (dirToGoSideAction == 2)
             dirToGo = (largeGrounded ? 1f : 0.5f) * 0.6f * transform.right;
+
         if (jumpAction == 1)
             if ((jumpingTime <= 0f) && smallGrounded)
             {

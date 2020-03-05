@@ -27,11 +27,9 @@ public class JumpOnPlatforms : Agent
     float distancePenaltyOffset = 2f;
 
     [SerializeField]
-    float heightPenalty = 40f;
-
-    [SerializeField]
     GameObject goal;
 
+    [SerializeField]
     bool grounded;
 
     [SerializeField]
@@ -43,9 +41,16 @@ public class JumpOnPlatforms : Agent
     [SerializeField]
     float fallDamage = -10f;
 
+    [SerializeField]
+    int maxJumps = 10;
+    int currentJumps;
+
+    float previousDistance;
+
+
     private void Awake() {
 #if UNITY_EDITOR
-        Debug.unityLogger.logEnabled = true;
+        Debug.unityLogger.logEnabled = false;
 #else
      Debug.logger.logEnabled = false;
 #endif
@@ -54,34 +59,23 @@ public class JumpOnPlatforms : Agent
 
     public override void AgentAction(float[] vectorAction) {
         if (this.grounded) {
-            //Debug.Log("Jump: " + new Vector3(vectorAction[0], vectorAction[1], vectorAction[2]));
-            this.agentRigibody.AddForce(
-                new Vector3(vectorAction[0], vectorAction[1], vectorAction[2])
-                * this.jumpForce, ForceMode.Acceleration);
-        }
-    }
 
-    public override float[] Heuristic() {
-        return base.Heuristic();
+            for (var i = 0; i < vectorAction.Length; i++) {
+                vectorAction[i] = Mathf.Clamp(vectorAction[i], -1f, 1f);
+            }
+
+            var x = vectorAction[0];
+            var y = this.ScaleAction(vectorAction[1], 0, 1);
+
+            var z = vectorAction[2];
+            this.agentRigibody.AddForce(new Vector3(x, y + 1, z) * this.jumpForce);
+        }
     }
 
     public override void CollectObservations() {
         this.AddVectorObs(this.transform.localPosition);
 
-        Bounds goalBounds = this.goal.GetComponent<MeshRenderer>().bounds;
-
-        this.AddVectorObs(Vector3.Distance(goalBounds.center, this.transform.position));
-        //this.AddVectorObs(goalBounds.size);
-
-        //foreach (var obstacle in this.obstacles) {
-        //    Bounds targetBounds = obstacle.GetComponent<MeshRenderer>().bounds;
-
-        //    this.AddVectorObs(targetBounds.center - this.transform.position);
-        //    this.AddVectorObs(targetBounds.size);
-        //}
-
-        this.AddVectorObs(this.agentRigibody.velocity);
-        this.AddVectorObs(this.grounded);
+        this.AddVectorObs(this.goal.transform.localPosition);
     }
 
     public override void AgentReset() {
@@ -96,29 +90,19 @@ public class JumpOnPlatforms : Agent
         this.agentRigibody.velocity = Vector3.zero;
         this.agentRigibody.rotation = Quaternion.identity;
         this.agentRigibody.angularVelocity = Vector3.zero;
+
+        this.currentJumps = this.maxJumps;
+
+        this.previousDistance = 0;
     }
 
     public override void InitializeAgent() {
         base.InitializeAgent();
+        this.currentJumps = this.maxJumps;
+        this.previousDistance = 0;
     }
 
     private void FixedUpdate() {
-        //var distancePenalty = (Vector3.Distance(this.goal.transform.position, this.transform.position) + this.distancePenaltyOffset);
-        var distancePenalty = (-Vector3.Distance(this.goal.transform.position, this.transform.position) + this.distancePenaltyOffset) / this.distancePenaltyDivider;
-        this.SetReward(distancePenalty);
-        Debug.Log("DistancePenalty: " + distancePenalty);
-
-        var heightPenalty = this.transform.position.y / 30f;
-        var test = Mathf.Abs(this.goal.transform.position.y - this.transform.position.y);
-        //Debug.Log(test);
-        var heightReward = Mathf.Clamp(1f / test, -1, 1) / 50f;
-        //this.SetReward(heightPenalty);
-        this.SetReward(heightReward);
-        Debug.Log("height reward: " + heightReward);
-
-        //this.totalPenalty += this.GetReward();
-        //Debug.Log(this.totalPenalty);
-
         if (this.transform.position.y < -1.5f) {
             this.SetReward(this.fallDamage);
             this.Done();
@@ -131,12 +115,38 @@ public class JumpOnPlatforms : Agent
 
     private void OnTriggerEnter(Collider collider) {
         if (collider.CompareTag("Ground")) {
-            Debug.Log("Grounded");
+
+            this.currentJumps--;
+            Debug.Log(this.currentJumps);
+            if (this.currentJumps == 0) {
+                this.SetReward(this.fallDamage);
+                this.Done();
+            }
+
+
+            float distance = Vector3.Distance(this.goal.transform.localPosition, this.transform.localPosition);
+            float distanceTraversed = Mathf.Abs(distance - this.previousDistance);
+            //Debug.Log("TRAVERSED: " + distanceTraversed);
+            if (this.previousDistance != 0) {
+                float triesPenalty = 0.01f / this.currentJumps;
+                this.AddReward(-triesPenalty);
+                Debug.Log("triesPne: " + (-triesPenalty));
+            }
+            this.previousDistance = distanceTraversed;
+
+
+            var distancePenalty = 
+                (-Vector3.Distance(this.goal.transform.localPosition, this.transform.localPosition)
+                + this.distancePenaltyOffset) / this.distancePenaltyDivider;
+            this.AddReward(distancePenalty);
+            //Debug.Log("DistancePenalty: " + distancePenalty);
+
             this.grounded = true;
+            this.RequestDecision();
         }
 
         if (collider.gameObject == this.goal) {
-            Debug.Log("Done");
+            //Debug.Log("Done");
             this.SetReward(this.doneReward);
             this.Done();
         }
@@ -144,7 +154,6 @@ public class JumpOnPlatforms : Agent
 
     private void OnTriggerExit(Collider other) {
         if (other.CompareTag("Ground")) {
-            Debug.Log("Un-Grounded");
             this.grounded = false;
         }
     }
